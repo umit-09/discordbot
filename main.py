@@ -4,6 +4,8 @@ import hikari,psutil,lightbulb,random,json,time,os
 coin = ["<:1:1084777301612437504>","<:2:1084777303223062609>","<:3:1084777306691731527>","<:4:1084777309103468584>","<:5:1084777310932193300>"]
 papir = "<:papir:1084796977767776256>"
 
+testers = ["852235304965242891"]
+
 with open('secret.secret', 'r') as f:
     TOKENa = f.readline()
 
@@ -37,9 +39,9 @@ async def getmoney(ctx):
     reward = random.randint(1, 5)
 
     # Check if the user has already used the command within the cooldown time
-    if user_id in bank and (now - bank[user_id]['last_used']) < cooldown_time and user_id != "852235304965242891":
+    if user_id in bank and (now - bank[user_id]['last_used']) < cooldown_time and user_id not in testers:
         time_left = int(cooldown_time - (now - bank[user_id]['last_used']))
-        await ctx.respond(f"{username}, you you already get your {papir}. Try again in **{time_left // 3600}H {(time_left % 3600) // 60}M**.")
+        await ctx.respond(f"{username}, you you already get your {papir}. \nTry again in **{time_left // 3600}H {(time_left % 3600) // 60}M**.\nyou have {bank[user_id]['balance']}{papir}")
         return    
     
     # Update the user's balance in the bank data
