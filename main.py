@@ -1,7 +1,8 @@
 # Import necessary modules
 import hikari,psutil,lightbulb,random,json,time,os
 
-gatchakitsucoin = "<:gatchakitsucoin:1084534637608583288>"
+coin = ["<:1:1084777301612437504>","<:2:1084777303223062609>","<:3:1084777306691731527>","<:4:1084777309103468584>","<:5:1084777310932193300>"]
+papir = "<:papir:1084796977767776256>"
 
 with open('secret.secret', 'r') as f:
     TOKENa = f.readline()
@@ -33,15 +34,13 @@ async def getmoney(ctx):
     user_id = str(ctx.author.id)
     username = ctx.author.username
     now = time.time()
-    
-    # Check if the user has already used the command within the cooldown time
-    if user_id in bank and (now - bank[user_id]['last_used']) < cooldown_time:
-        time_left = int(cooldown_time - (now - bank[user_id]['last_used']))
-        await ctx.respond(f"{username}, you you already get your {gatchakitsucoin}. Try again in **{time_left // 3600}H {(time_left % 3600) // 60}M**.")
-        return
-
-    # Generate a random reward amount between 1 and 5
     reward = random.randint(1, 5)
+
+    # Check if the user has already used the command within the cooldown time
+    if user_id in bank and (now - bank[user_id]['last_used']) < cooldown_time and user_id != "852235304965242891":
+        time_left = int(cooldown_time - (now - bank[user_id]['last_used']))
+        await ctx.respond(f"{username}, you you already get your {papir}. Try again in **{time_left // 3600}H {(time_left % 3600) // 60}M**.")
+        return    
     
     # Update the user's balance in the bank data
     if user_id in bank:
@@ -49,11 +48,7 @@ async def getmoney(ctx):
     else:
         bank[user_id] = {'balance': reward, 'last_used': now}
 
-    # Respond to the user with the reward amount and their new balance
-    if reward == 0:
-        await ctx.respond(f"{username}, you received nothing. Try again tomorrow! \nNow you have **{bank[user_id]['balance']}{gatchakitsucoin}**.")
-    if reward > 0:
-        await ctx.respond(f"{username}, you received **{reward}{gatchakitsucoin}**! \nNow you have **{bank[user_id]['balance']}{gatchakitsucoin}**.")
+    await ctx.respond(f"{username}, you received **{reward}{coin[reward-1]}**! \nNow you have **{bank[user_id]['balance']}{papir}**.")
 
     # Update the user's last used time in the bank data and save it to the JSON file
     bank[user_id]['last_used'] = now
