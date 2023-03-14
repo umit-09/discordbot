@@ -4,8 +4,9 @@ from typing import Optional
 
 coin = ["<:1:1084777301612437504>","<:2:1084777303223062609>","<:3:1084777306691731527>","<:4:1084777309103468584>","<:5:1084777310932193300>"]
 papir = "<:papir:1084796977767776256>"
-
 testers = ["852235304965242891"]
+data = {"servers":{}}
+cooldown_time = 12 * 60 * 60
 
 with open('secret.secret', 'r') as f:
     TOKENa = f.readline()
@@ -17,12 +18,6 @@ bank = {}
 with open('bank.json', 'r') as f:
     bank = json.load(f)
 
-# Set the cooldown time in seconds
-cooldown_time = 12 * 60 * 60
-
-# Initialize the bot with a token
-
-
 # Define an event listener for when the bot starts
 @bot.listen(hikari.StartedEvent)
 async def on_started(event):
@@ -30,7 +25,7 @@ async def on_started(event):
 
 # Define a command for getting daily money
 @bot.command()
-@lightbulb.command("getmoney", "get daily money")
+@lightbulb.command("vote", "vote for get daily money")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def getmoney(ctx):
     # Get the user's ID, username, and the current time
@@ -58,7 +53,7 @@ async def getmoney(ctx):
     with open('bank.json', 'w') as f:
         json.dump(bank, f)
     # Print the updated bank data to the console for debugging purposes
-    print(bank)
+    print("someone voted: ",bank)
 
 # Define a command for checking the bot's status
 @bot.command()
@@ -83,26 +78,70 @@ async def invite(ctx):
 
 @bot.command
 @lightbulb.option("rolename", "sellected role", type=hikari.Role)
-@lightbulb.option("user", "user to send", type=hikari.User)
+@lightbulb.option("username", "user to send", type=hikari.User)
 @lightbulb.command("role", "Make an announcement!", pass_options=True)
 @lightbulb.implements(lightbulb.SlashCommand) 
 async def role(
     ctx: lightbulb.SlashContext,
-    user: Optional[hikari.User] = None,
+    username: Optional[hikari.User] = None,
     rolename: Optional[hikari.Role] = None,) -> None:
+    
+    with open('data.json', 'r') as f:
+        data = json.load(f)
 
-    if bank[str(user.id)]['balance'] >= 20:
-        member = await ctx.guild.get_member(user.id)
-        if rolename in member.roles:
-            await ctx.respond("User already has that role.")
-            return
-        bank[str(user.id)]['balance'] -= 20 
+    count = int(data["servers"][str(ctx.guild_id)]["roles"][str(rolename.id)])
+    print(count)
+
+    if bank[str(username.id)]['balance'] >= count:
+        balance = int(bank[str(username.id)]['balance'])
+        bank[str(username.id)]['balance'] = balance - 20
+
         with open('bank.json', 'w') as f:
             json.dump(bank, f)
-        await bot.rest.add_role_to_member(user=ctx.author, guild=ctx.guild_id, role=rolename.id)
+        
+        await bot.rest.add_role_to_member(user=username.id, guild=ctx.guild_id, role=rolename.id)
+
+        print("role gived: ",bank)
+        return
     else:
-        await ctx.respond(f"you dont have 20{papir}")
+        await ctx.respond(f"you dont have {count}{papir}")
+
+
+@bot.command
+@lightbulb.option("price", "selected role price", type=str)
+@lightbulb.option("rolename", "selected role", type=hikari.Role)
+@lightbulb.command("addrole", "Add a role to the server!", pass_options=True)
+@lightbulb.implements(lightbulb.SlashCommand) 
+async def addrole(
+    ctx: lightbulb.SlashContext,
+    price: str,
+    rolename: Optional[hikari.Role] = None) -> None:
+
+    print(f"price: {price}")
+    server_id = str(ctx.guild_id)
+    role_id = str(rolename.id)
+    print(f"server id: {server_id}")
+
+    with open('data.json', 'r') as f:
+        data = json.load(f)
+        print(data)
+
+    if server_id in data["servers"]:
+        print(data["servers"][server_id])
+
+        with open('data.json', 'w') as f:
+            data["servers"][server_id]["roles"] = {role_id:price}
+            json.dump(data, f)
+
+    else:
+        with open('data.json', 'w') as f:
+            data["servers"] = {server_id:{"roles","moderators"}}
+
+            if str(rolename.id) not in data["servers"][server_id]["roles"]:
+                data["servers"][server_id]["roles"] += {str(rolename.id):str(price)}
+                
+            json.dump(data, f)
+            print("server saved to data.json")
 
 # Run the bot
 bot.run()
- 

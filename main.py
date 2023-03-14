@@ -30,7 +30,7 @@ async def on_started(event):
 
 # Define a command for getting daily money
 @bot.command()
-@lightbulb.command("getmoney", "get daily money")
+@lightbulb.command("vote", "vote for get daily money")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def getmoney(ctx):
     # Get the user's ID, username, and the current time
