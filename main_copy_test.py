@@ -81,5 +81,28 @@ async def ping(ctx):
 async def invite(ctx):
     await ctx.respond("you can use this link to invite me to any server\nplease don't spam\nhttps://discord.com/api/oauth2/authorize?client_id=1084422933805535312&permissions=8&scope=bot")
 
+@bot.command
+@lightbulb.option("rolename", "sellected role", type=hikari.Role)
+@lightbulb.option("user", "user to send", type=hikari.User)
+@lightbulb.command("role", "Make an announcement!", pass_options=True)
+@lightbulb.implements(lightbulb.SlashCommand) 
+async def role(
+    ctx: lightbulb.SlashContext,
+    user: Optional[hikari.User] = None,
+    rolename: Optional[hikari.Role] = None,) -> None:
+
+    if bank[str(user.id)]['balance'] >= 20:
+        member = await ctx.guild.get_member(user.id)
+        if rolename in member.roles:
+            await ctx.respond("User already has that role.")
+            return
+        bank[str(user.id)]['balance'] -= 20 
+        with open('bank.json', 'w') as f:
+            json.dump(bank, f)
+        await bot.rest.add_role_to_member(user=ctx.author, guild=ctx.guild_id, role=rolename.id)
+    else:
+        await ctx.respond(f"you dont have 20{papir}")
+
 # Run the bot
 bot.run()
+ 
