@@ -78,28 +78,29 @@ async def invite(ctx):
 
 @bot.command
 @lightbulb.option("rolename", "sellected role", type=hikari.Role)
-@lightbulb.option("username", "user to send", type=hikari.User)
 @lightbulb.command("role", "Make an announcement!", pass_options=True)
 @lightbulb.implements(lightbulb.SlashCommand) 
 async def role(
     ctx: lightbulb.SlashContext,
-    username: Optional[hikari.User] = None,
     rolename: Optional[hikari.Role] = None,) -> None:
-    
     with open('data.json', 'r') as f:
         data = json.load(f)
 
-    count = int(data["servers"][str(ctx.guild_id)]["roles"][str(rolename.id)])
+    count = int(data["roles"][str(rolename.id)])
     print(count)
 
-    if bank[str(username.id)]['balance'] >= count:
-        balance = int(bank[str(username.id)]['balance'])
-        bank[str(username.id)]['balance'] = balance - 20
+    roles = ctx.member.get_roles()
+    print(roles)
+
+    if bank[str(ctx.member.id)]['balance'] >= count:
+        balance = int(bank[str(ctx.member.id)]['balance'])
+        bank[str(ctx.member.id)]['balance'] = balance - count
 
         with open('bank.json', 'w') as f:
             json.dump(bank, f)
         
-        await bot.rest.add_role_to_member(user=username.id, guild=ctx.guild_id, role=rolename.id)
+        await ctx.respond(f"role gived\nnow you have {balance}{papir}")
+        await bot.rest.add_role_to_member(user=ctx.member.id, guild=ctx.guild_id, role=rolename.id)
 
         print("role gived: ",bank)
         return
@@ -124,23 +125,23 @@ async def addrole(
 
     with open('data.json', 'r') as f:
         data = json.load(f)
-        print(data)
+        
 
-    if server_id in data["servers"]:
-        print(data["servers"][server_id])
+    if role_id in data["roles"]:
+        print(data["roles"])
 
         with open('data.json', 'w') as f:
-            data["servers"][server_id]["roles"] = {role_id:price}
+            data["roles"] = {role_id:price}
             json.dump(data, f)
 
     else:
         with open('data.json', 'w') as f:
-            data["servers"] = {server_id:{"roles","moderators"}}
 
-            if str(rolename.id) not in data["servers"][server_id]["roles"]:
-                data["servers"][server_id]["roles"] += {str(rolename.id):str(price)}
+            if str(role_id) not in data["roles"]:
+                data["roles"][role_id] = price
                 
             json.dump(data, f)
+            print(data)
             print("server saved to data.json")
 
 # Run the bot
