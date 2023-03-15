@@ -9,7 +9,8 @@ data = {"servers":{}}
 cooldown_time = 12 * 60 * 60
 
 with open('secret.secret', 'r') as f:
-    TOKENa = f.readline()
+    TOKENa = f.readline().replace(" ","")
+    print(TOKENa)
 
 bot = lightbulb.BotApp(token=TOKENa)   
 
@@ -21,7 +22,7 @@ with open('bank.json', 'r') as f:
 # Define an event listener for when the bot starts
 @bot.listen(hikari.StartedEvent)
 async def on_started(event):
-    print(f'bot has started! {TOKENa}')
+    print(f'bot has started!')
 
 # Define a command for getting daily money
 @bot.command()
@@ -89,23 +90,25 @@ async def role(
     count = int(data["roles"][str(rolename.id)])
     print(count)
 
-    roles = ctx.member.get_roles()
-    print(roles)
+    user_roles = [role.id for role in ctx.member.get_roles()]
 
-    if bank[str(ctx.member.id)]['balance'] >= count:
-        balance = int(bank[str(ctx.member.id)]['balance'])
-        bank[str(ctx.member.id)]['balance'] = balance - count
+    if rolename.id not in user_roles:
+        if bank[str(ctx.member.id)]['balance'] >= count:
+            balance = int(bank[str(ctx.member.id)]['balance'])
+            bank[str(ctx.member.id)]['balance'] = balance - count
 
-        with open('bank.json', 'w') as f:
-            json.dump(bank, f)
-        
-        await ctx.respond(f"role gived\nnow you have {balance}{papir}")
-        await bot.rest.add_role_to_member(user=ctx.member.id, guild=ctx.guild_id, role=rolename.id)
+            with open('bank.json', 'w') as f:
+                json.dump(bank, f)
+            
+            await ctx.respond(f"role gived\nnow you have {balance}{papir}")
+            await bot.rest.add_role_to_member(user=ctx.member.id, guild=ctx.guild_id, role=rolename.id)
 
-        print("role gived: ",bank)
-        return
+            print("role gived: ",bank)
+            return
+        else:
+            await ctx.respond(f"you dont have {count}{papir}")
     else:
-        await ctx.respond(f"you dont have {count}{papir}")
+        await ctx.respond(f"you already have this role")
 
 
 @bot.command
@@ -126,13 +129,23 @@ async def addrole(
     with open('data.json', 'r') as f:
         data = json.load(f)
         
+    try:
+        if role_id in data["roles"]:
+            print(data["roles"])
 
-    if role_id in data["roles"]:
-        print(data["roles"])
+            with open('data.json', 'w') as f:
+                data["roles"] = {role_id:price}
+                json.dump(data, f)
+            await ctx.respond(f"{'<@&' + role_id + '>'} is already saved before.\n{'<@&' + role_id + '>'} is now **{data['roles'][role_id]}{papir}**")
+            return
+    except:
+        with open('bank.json', 'w') as f:
+            json.dump('{"roles":{},"moderators":{}}', f)
+            print(data["roles"])
 
-        with open('data.json', 'w') as f:
-            data["roles"] = {role_id:price}
-            json.dump(data, f)
+            with open('data.json', 'w') as f:
+                data["roles"] = {role_id:price}
+                json.dump(data, f)
 
     else:
         with open('data.json', 'w') as f:
@@ -143,6 +156,7 @@ async def addrole(
             json.dump(data, f)
             print(data)
             print("server saved to data.json")
+            await ctx.respond(f"{'<@&' + role_id + '>'} added: **{price}{papir}**")
 
 # Run the bot
 bot.run()
