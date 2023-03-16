@@ -136,7 +136,7 @@ async def addrole(
     server_id = str(ctx.guild_id)
     role_id = str(rolename.id)
 
-    if ctx.guild_id not in data["moderators"]
+    if ctx.guild_id not in data["moderators"]:
     if ctx.member.id not in data["moderators"][server_id]:
         
 
