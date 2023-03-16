@@ -1,6 +1,6 @@
 # this code made by umittadelen#4072
 
-# ©      <copyright 
+# ©      copyright 
 #   all rights reserved
 
 # Import necessary modules
