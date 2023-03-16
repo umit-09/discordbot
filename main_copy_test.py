@@ -28,7 +28,7 @@ async def on_started(event):
 @bot.command()
 @lightbulb.command("vote", "vote for get daily money")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def getmoney(ctx):
+async def vote(ctx):
     # Get the user's ID, username, and the current time
     user_id = str(ctx.author.id)
     username = ctx.author.username
@@ -87,29 +87,36 @@ async def role(
     with open('data.json', 'r') as f:
         data = json.load(f)
 
-    count = int(data["roles"][str(rolename.id)])
-    print(count)
+    try:
+        count = int(data["roles"][str(rolename.id)])
+    except:
+        await ctx.respond(f"{ctx.member} this role is not in sale")
+        return
 
     user_roles = [role.id for role in ctx.member.get_roles()]
 
-    if rolename.id not in user_roles:
-        if bank[str(ctx.member.id)]['balance'] >= count:
-            balance = int(bank[str(ctx.member.id)]['balance'])
-            bank[str(ctx.member.id)]['balance'] = balance - count
+    if str(ctx.author.id) in bank:
+        if rolename.id not in user_roles:
+            if bank[str(ctx.member.id)]['balance'] >= count:
+                balance = int(bank[str(ctx.member.id)]['balance'])
+                bank[str(ctx.member.id)]['balance'] = balance - count
+                balance -= count
 
-            with open('bank.json', 'w') as f:
-                json.dump(bank, f)
-            
-            await ctx.respond(f"role gived\nnow you have {balance}{papir}")
-            await bot.rest.add_role_to_member(user=ctx.member.id, guild=ctx.guild_id, role=rolename.id)
-
-            print("role gived: ",bank)
-            return
+                with open('bank.json', 'w') as f:
+                    json.dump(bank, f)
+                
+                await ctx.respond(f"role gived\nnow you have {balance}{papir}")
+                await bot.rest.add_role_to_member(user=ctx.member.id, guild=ctx.guild_id, role=rolename.id)
+                return
+            else:
+                await ctx.respond(f"{ctx.member} you dont have {count}{papir}")
+                return
         else:
-            await ctx.respond(f"you dont have {count}{papir}")
+            await ctx.respond(f"{ctx.member} you already have this role")
+            return
     else:
-        await ctx.respond(f"you already have this role")
-
+        await ctx.respond(f"{ctx.member} you dont have an account yet, use /vote to get money")
+        return
 
 @bot.command
 @lightbulb.option("price", "selected role price", type=str)
@@ -121,17 +128,20 @@ async def addrole(
     price: str,
     rolename: Optional[hikari.Role] = None) -> None:
 
-    print(f"price: {price}")
+    try:
+        price = int(price)
+    except:
+        await ctx.respond(f"{ctx.member} enter only numbers not chaaracters")
+        return
+
     server_id = str(ctx.guild_id)
     role_id = str(rolename.id)
-    print(f"server id: {server_id}")
 
     with open('data.json', 'r') as f:
         data = json.load(f)
         
     try:
         if role_id in data["roles"]:
-            print(data["roles"])
 
             with open('data.json', 'w') as f:
                 data["roles"] = {role_id:price}
@@ -140,7 +150,7 @@ async def addrole(
             return
     except:
         with open('bank.json', 'w') as f:
-            json.dump('{"roles":{},"moderators":{}}', f)
+            json.dump({"roles":{},"moderators":{}}, f)
             print(data["roles"])
 
             with open('data.json', 'w') as f:
