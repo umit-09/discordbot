@@ -133,14 +133,20 @@ async def addrole(
     price: str,
     rolename: Optional[hikari.Role] = None) -> None:
 
+    server_id = str(ctx.guild_id)
+    role_id = str(rolename.id)
+
+    if ctx.guild_id not in data["moderators"]
+    if ctx.member.id not in data["moderators"][server_id]:
+        
+
     try:
         price = int(price)
     except:
         await ctx.respond(f"{ctx.member} enter only numbers not chaaracters")
         return
 
-    server_id = str(ctx.guild_id)
-    role_id = str(rolename.id)
+    
 
     with open('data.json', 'r') as f:
         data = json.load(f)
