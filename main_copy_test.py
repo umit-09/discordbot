@@ -135,10 +135,19 @@ async def addrole(
 
     server_id = str(ctx.guild_id)
     role_id = str(rolename.id)
+    
+    with open('data.json', 'r') as f:
+        data = json.load(f)
 
-    if ctx.guild_id not in data["moderators"]:
-    if ctx.member.id not in data["moderators"][server_id]:
+    if "moderators" not in data:
+        data["moderators"] = {}
+    if server_id not in data["moderators"]:
+        data["moderators"][server_id] = [ctx.member.id]
+    else:
+        data["moderators"][server_id].append(ctx.member.id)
         
+    with open('data.json', 'w') as f:
+        json.dump(data, f)
 
     try:
         price = int(price)
@@ -146,38 +155,37 @@ async def addrole(
         await ctx.respond(f"{ctx.member} enter only numbers not chaaracters")
         return
 
-    
-
     with open('data.json', 'r') as f:
         data = json.load(f)
-        
-    try:
-        if role_id in data["roles"]:
 
+    if ctx.member.id in data["moderators"][server_id]:
+        try:
+            if role_id in data["roles"]:
+
+                with open('data.json', 'w') as f:
+                    data["roles"] = {role_id:price}
+                    json.dump(data, f)
+                await ctx.respond(f"{'<@&' + role_id + '>'} is already saved before.\n{'<@&' + role_id + '>'} is now **{data['roles'][role_id]}{papir}**")
+                return
+        except:
+            with open('bank.json', 'w') as f:
+                json.dump({"roles":{},"moderators":{}}, f)
+                print(data["roles"])
+
+                with open('data.json', 'w') as f:
+                    data["roles"] = {role_id:price}
+                    json.dump(data, f)
+
+        else:
             with open('data.json', 'w') as f:
-                data["roles"] = {role_id:price}
+
+                if str(role_id) not in data["roles"]:
+                    data["roles"][role_id] = price
+                    
                 json.dump(data, f)
-            await ctx.respond(f"{'<@&' + role_id + '>'} is already saved before.\n{'<@&' + role_id + '>'} is now **{data['roles'][role_id]}{papir}**")
-            return
-    except:
-        with open('bank.json', 'w') as f:
-            json.dump({"roles":{},"moderators":{}}, f)
-            print(data["roles"])
-
-            with open('data.json', 'w') as f:
-                data["roles"] = {role_id:price}
-                json.dump(data, f)
-
-    else:
-        with open('data.json', 'w') as f:
-
-            if str(role_id) not in data["roles"]:
-                data["roles"][role_id] = price
-                
-            json.dump(data, f)
-            print(data)
-            print("server saved to data.json")
-            await ctx.respond(f"{'<@&' + role_id + '>'} added: **{price}{papir}**")
+                print(data)
+                print("server saved to data.json")
+                await ctx.respond(f"{'<@&' + role_id + '>'} added: **{price}{papir}**")
 
 # Run the bot
 bot.run()
