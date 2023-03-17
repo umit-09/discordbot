@@ -138,25 +138,12 @@ async def addrole(
     
     with open('data.json', 'r') as f:
         data = json.load(f)
-
-    if "moderators" not in data:
-        data["moderators"] = {}
-    if server_id not in data["moderators"]:
-        data["moderators"][server_id] = [ctx.member.id]
-    else:
-        data["moderators"][server_id].append(ctx.member.id)
         
-    with open('data.json', 'w') as f:
-        json.dump(data, f)
-
     try:
         price = int(price)
     except:
         await ctx.respond(f"{ctx.member} enter only numbers not chaaracters")
         return
-
-    with open('data.json', 'r') as f:
-        data = json.load(f)
 
     if ctx.member.id in data["moderators"][server_id]:
         try:
@@ -186,6 +173,32 @@ async def addrole(
                 print(data)
                 print("server saved to data.json")
                 await ctx.respond(f"{'<@&' + role_id + '>'} added: **{price}{papir}**")
+
+@bot.command
+@lightbulb.option("username", "select an user to make mod", type=hikari.User)
+@lightbulb.command("addmod", "Add a moderator!", pass_options=True)
+@lightbulb.implements(lightbulb.SlashCommand) 
+async def addrole(
+    ctx: lightbulb.SlashContext,
+    username: Optional[hikari.User] = None) -> None:
+
+    with open('data.json', 'r') as f:
+        data = json.load(f)
+
+    server_id = str(ctx.guild_id)
+
+    if(ctx.member.id != ctx.get_guild().owner_id or ctx.member.id not in data["moderators"][server_id]):
+        return
+
+    if "moderators" not in data:
+        data["moderators"] = {}
+    if server_id not in data["moderators"]:
+        data["moderators"][server_id] = [ctx.get_guild().owner_id]
+    elif():
+        data["moderators"][server_id].append(ctx.member.id)
+        
+    with open('data.json', 'w') as f:
+        json.dump(data, f)
 
 # Run the bot
 bot.run()
