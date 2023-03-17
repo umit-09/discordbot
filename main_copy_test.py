@@ -192,7 +192,7 @@ async def addrole(
     server_id = str(ctx.guild_id)
 
     if(ctx.member.id != ctx.get_guild().owner_id or ctx.member.id not in data["moderators"][server_id]):
-        await ctx.respond("you need to be a moderator for use this command")
+        await ctx.respond(f"{username} you need to be a moderator for use this command")
         return
 
     if "moderators" not in data:
@@ -209,6 +209,6 @@ async def addrole(
         json.dump(data, f)
 
     await ctx.respond(f"{username} is now a moderator")
-    
+
 # Run the bot
 bot.run()
