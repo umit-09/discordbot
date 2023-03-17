@@ -202,12 +202,12 @@ async def addrole(
     if username.id not in data["moderators"][server_id]:
         data["moderators"][server_id].append(username.id)
     else:
-        await ctx.respond(f"username is allready a moderator")
+        await ctx.respond(f"{username} is allready a moderator")
         return
         
     with open('data.json', 'w') as f:
         json.dump(data, f)
 
-    await ctx.respond(f"username is now a moderator")
+    await ctx.respond(f"{username} is now a moderator")
 # Run the bot
 bot.run()
