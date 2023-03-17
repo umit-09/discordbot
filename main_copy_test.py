@@ -201,6 +201,9 @@ async def addrole(
         data["moderators"][server_id] = [ctx.get_guild().owner_id]
     if username.id not in data["moderators"][server_id]:
         data["moderators"][server_id].append(username.id)
+    else:
+        await ctx.respond(f"username is allready a moderator")
+        return
         
     with open('data.json', 'w') as f:
         json.dump(data, f)
