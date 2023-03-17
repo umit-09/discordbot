@@ -135,6 +135,10 @@ async def addrole(
 
     server_id = str(ctx.guild_id)
     role_id = str(rolename.id)
+
+    if(ctx.member.id != ctx.get_guild().owner_id or ctx.member.id not in data["moderators"][server_id]):
+        await ctx.respond("you need to be a moderator for use this command")
+        return
     
     with open('data.json', 'r') as f:
         data = json.load(f)
@@ -188,17 +192,19 @@ async def addrole(
     server_id = str(ctx.guild_id)
 
     if(ctx.member.id != ctx.get_guild().owner_id or ctx.member.id not in data["moderators"][server_id]):
+        await ctx.respond("you need to be a moderator for use this command")
         return
 
     if "moderators" not in data:
         data["moderators"] = {}
     if server_id not in data["moderators"]:
         data["moderators"][server_id] = [ctx.get_guild().owner_id]
-    elif():
-        data["moderators"][server_id].append(ctx.member.id)
+    if username.id not in data["moderators"][server_id]:
+        data["moderators"][server_id].append(username.id)
         
     with open('data.json', 'w') as f:
         json.dump(data, f)
 
+    await ctx.respond(f"username is now a moderator")
 # Run the bot
 bot.run()
