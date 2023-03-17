@@ -209,5 +209,6 @@ async def addrole(
         json.dump(data, f)
 
     await ctx.respond(f"{username} is now a moderator")
+    
 # Run the bot
 bot.run()
