@@ -3,7 +3,6 @@
 # ©      copyright 
 #   all rights reserved
 
-# Import necessary modules
 import hikari,psutil,lightbulb,random,json,time,os
 from typing import Optional
 
@@ -52,7 +51,7 @@ async def vote(ctx):
     else:
         bank[user_id] = {'balance': reward, 'last_used': now}
 
-    await ctx.respond(f"{username}, you received **{reward}{coin[reward-1]}**! \nNow you have **{bank[user_id]['balance']}{papir}**.")
+    await ctx.respond(f"<@{user_id}>, you received **{reward}{coin[reward-1]}**! \nNow you have **{bank[user_id]['balance']}{papir}**.")
 
     # Update the user's last used time in the bank data and save it to the JSON file
     bank[user_id]['last_used'] = now
@@ -89,38 +88,41 @@ async def invite(ctx):
 async def role(
     ctx: lightbulb.SlashContext,
     rolename: Optional[hikari.Role] = None,) -> None:
+
+    user_id = ctx.member.id
+
     with open('data.json', 'r') as f:
         data = json.load(f)
 
     try:
         count = int(data["roles"][str(rolename.id)])
     except:
-        await ctx.respond(f"{ctx.member} this role is not in sale")
+        await ctx.respond(f"<@{user_id}> this role is not in sale")
         return
 
     user_roles = [role.id for role in ctx.member.get_roles()]
 
-    if str(ctx.author.id) in bank:
+    if str(user_id) in bank:
         if rolename.id not in user_roles:
-            if bank[str(ctx.member.id)]['balance'] >= count:
-                balance = int(bank[str(ctx.member.id)]['balance'])
-                bank[str(ctx.member.id)]['balance'] = balance - count
+            if bank[str(user_id)]['balance'] >= count:
+                balance = int(bank[str(user_id)]['balance'])
+                bank[str(user_id)]['balance'] = balance - count
                 balance -= count
 
                 with open('bank.json', 'w') as f:
                     json.dump(bank, f)
                 
-                await ctx.respond(f"role gived\nnow you have {balance}{papir}")
-                await bot.rest.add_role_to_member(user=ctx.member.id, guild=ctx.guild_id, role=rolename.id)
+                await ctx.respond(f"<@{user_id}> role gived\nnow you have {balance}{papir}")
+                await bot.rest.add_role_to_member(user=user_id, guild=ctx.guild_id, role=rolename.id)
                 return
             else:
-                await ctx.respond(f"{ctx.member} you dont have {count}{papir}")
+                await ctx.respond(f"<@{user_id}> you dont have {count}{papir}")
                 return
         else:
-            await ctx.respond(f"{ctx.member} you already have this role")
+            await ctx.respond(f"<@{user_id}> you already have this role")
             return
     else:
-        await ctx.respond(f"{ctx.member} you dont have an account yet, use /vote to get money")
+        await ctx.respond(f"<@{user_id}> you dont have an account yet, use /vote to get money")
         return
 
 @bot.command
@@ -135,18 +137,19 @@ async def addrole(
 
     server_id = str(ctx.guild_id)
     role_id = str(rolename.id)
+    user_id = ctx.member.id
 
-    if(ctx.member.id != ctx.get_guild().owner_id or ctx.member.id not in data["moderators"][server_id]):
-        await ctx.respond("you need to be a moderator for use this command")
-        return
-    
     with open('data.json', 'r') as f:
         data = json.load(f)
         
+    if(user_id != ctx.get_guild().owner_id or user_id not in data["moderators"][server_id]):
+        await ctx.respond("you need to be a moderator for use this command")
+        return
+    
     try:
         price = int(price)
     except:
-        await ctx.respond(f"{ctx.member} enter only numbers not chaaracters")
+        await ctx.respond(f"<@{user_id}> enter only numbers not chaaracters")
         return
 
     if ctx.member.id in data["moderators"][server_id]:
@@ -156,7 +159,7 @@ async def addrole(
                 with open('data.json', 'w') as f:
                     data["roles"] = {role_id:price}
                     json.dump(data, f)
-                await ctx.respond(f"{'<@&' + role_id + '>'} is already saved before.\n{'<@&' + role_id + '>'} is now **{data['roles'][role_id]}{papir}**")
+                await ctx.respond(f"<@&{role_id}> is already saved before.\n<@&{role_id}> is now **{data['roles'][role_id]}{papir}**")
                 return
         except:
             with open('bank.json', 'w') as f:
@@ -167,16 +170,17 @@ async def addrole(
                     data["roles"] = {role_id:price}
                     json.dump(data, f)
 
-        else:
-            with open('data.json', 'w') as f:
+    else:
+        with open('data.json', 'w') as f:
 
-                if str(role_id) not in data["roles"]:
-                    data["roles"][role_id] = price
-                    
-                json.dump(data, f)
-                print(data)
-                print("server saved to data.json")
-                await ctx.respond(f"{'<@&' + role_id + '>'} added: **{price}{papir}**")
+            if str(role_id) not in data["roles"]:
+                data["roles"][role_id] = price
+                
+            json.dump(data, f)
+            print(data)
+            print("server saved to data.json")
+            await ctx.respond(f"<@&{role_id}> added: **{price}{papir}**")
+
 
 @bot.command
 @lightbulb.option("username", "select an user to make mod", type=hikari.User)
@@ -186,13 +190,17 @@ async def addrole(
     ctx: lightbulb.SlashContext,
     username: Optional[hikari.User] = None) -> None:
 
+    user_id = ctx.member.id
+
     with open('data.json', 'r') as f:
         data = json.load(f)
 
     server_id = str(ctx.guild_id)
 
-    if(ctx.member.id != ctx.get_guild().owner_id or ctx.member.id not in data["moderators"][server_id]):
-        await ctx.respond(f"{username} you need to be a moderator for use this command")
+    if(user_id != ctx.get_guild().owner_id):
+        print(user_id)
+        print(ctx.get_guild().owner_id)
+        await ctx.respond(f"<@{user_id}> you need to be a moderator for use this command")
         return
 
     if "moderators" not in data:
@@ -202,13 +210,13 @@ async def addrole(
     if username.id not in data["moderators"][server_id]:
         data["moderators"][server_id].append(username.id)
     else:
-        await ctx.respond(f"{username} is allready a moderator")
+        await ctx.respond(f"<@{username.id}> is allready a moderator")
         return
         
     with open('data.json', 'w') as f:
         json.dump(data, f)
 
-    await ctx.respond(f"<@&{username.id}> is now a moderator")
+    await ctx.respond(f"<@{username.id}> is now a moderator")
 
 # Run the bot
 bot.run()
