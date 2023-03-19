@@ -13,7 +13,7 @@ testers = ["852235304965242891","1086242607933440030"]
 data = {"servers":{}}
 cooldown_time = 12 * 60 * 60
 
-with open('.gitignore', 'r') as f:
+with open('secret.secret', 'r') as f:
     TOKENa = f.readline()
     print(TOKENa)
 
