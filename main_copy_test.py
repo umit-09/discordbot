@@ -13,8 +13,8 @@ testers = ["852235304965242891","1086242607933440030"]
 data = {"servers":{}}
 cooldown_time = 12 * 60 * 60
 
-with open('secret.secret', 'r') as f:
-    TOKENa = f.readline().replace(" ","")
+with open('.gitignore', 'r') as f:
+    TOKENa = f.readline()
     print(TOKENa)
 
 bot = lightbulb.BotApp(token=TOKENa)   
@@ -208,7 +208,7 @@ async def addrole(
     with open('data.json', 'w') as f:
         json.dump(data, f)
 
-    await ctx.respond(f"{username} is now a moderator")
+    await ctx.respond(f"<@&{username.id}> is now a moderator")
 
 # Run the bot
 bot.run()
