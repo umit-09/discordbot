@@ -165,8 +165,8 @@ async def addrole(
     if(server_id not in data["servers"]):
         data = {server_id:[]}
     
-    if(ctx.get_guild().owner_id not in data[server_id]["mods"]):
-        data[server_id]["mods"].append(ctx.get_guild().owner_id)
+    if(int(ctx.get_guild().owner_id) not in data[server_id]["mods"]):
+        data[server_id]["mods"].append(int(ctx.get_guild().owner_id))
 
     write_list("data.bin",data)
 
@@ -231,6 +231,38 @@ async def addrole(
     write_list("data.bin",data)
 
     await ctx.respond(f"<@{username.id}> is now a moderator")
+
+@bot.command
+@lightbulb.option("username", "select an user to make mod", type=hikari.User)
+@lightbulb.command("removemod", "Add a moderator!", pass_options=True)
+@lightbulb.implements(lightbulb.SlashCommand) 
+async def addrole(
+    ctx: lightbulb.SlashContext,
+    username: Optional[hikari.User] = None) -> None:
+
+    user_id = ctx.member.id
+    server_id = str(ctx.guild_id)
+
+    data = read_list("data.bin")
+
+    if(user_id != ctx.get_guild().owner_id):
+        print(user_id)
+        print(ctx.get_guild().owner_id)
+        await ctx.respond(f"<@{username.id}> you need to be a moderator for use this command")
+        return
+    
+    if server_id not in data:
+        await ctx.respond(f"<@{username.id}> this server is not saved before you need to run /addrole command")
+
+    if username.id not in data[server_id]["mods"]:
+        await ctx.respond(f"<@{username.id}> is not a moderator")
+
+    else:
+        del data[server_id]["mods"][username.id]
+        await ctx.respond(f"<@{username.id}> is now not a moderator")
+        return
+        
+    write_list("data.bin",data)
 
 # Run the bot
 bot.run()
