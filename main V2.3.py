@@ -22,7 +22,7 @@ bot = lightbulb.BotApp(token=TOKENa)
 def write_list(file,input):
     with open(file, 'wb') as fp:
         pickle.dump(input, fp)
-        print('Done writing list into a binary file')
+        print(f"\n{file}\n{input}")
 
 # Read list to memory
 def read_list(file):
@@ -39,7 +39,7 @@ except:
 try:
     data = read_list('data.bin')
 except:
-    write_list('data.bin',{"roles":{},"servers":{"0":[]}})
+    write_list('data.bin',{"0":{"roles":{},"mods":[]}})
 
 # Define an event listener for when the bot starts
 @bot.listen(hikari.StartedEvent)
@@ -103,13 +103,14 @@ async def role(
     ctx: lightbulb.SlashContext,
     rolename: Optional[hikari.Role] = None,) -> None:
 
+    server_id = str(ctx.guild_id)
     user_id = ctx.author.id
 
     data = read_list("data.bin")
     bank = read_list("bank.bin")
 
     try:
-        count = int(data["roles"][str(rolename.id)])
+        count = int(data[server_id]["roles"][str(rolename.id)])
     except:
         await ctx.respond(f"<@{user_id}> this role is not in sale")
         return
@@ -154,17 +155,15 @@ async def addrole(
 
     data = read_list("data.bin")
 
-    if(server_id not in data["servers"]):
-        data["servers"] = {server_id:[]}
+    if(server_id not in data):
+        data = {server_id:{"roles":{},"mods":[]}}
     
     if(ctx.get_guild().owner_id not in data[server_id]["mods"]):
         data[server_id]["mods"].append(ctx.get_guild().owner_id)
 
     write_list("data.bin",data)
 
-    print(data)
-
-    if(user_id != ctx.get_guild().owner_id or user_id not in data["servers"][server_id]):
+    if(user_id != ctx.get_guild().owner_id or user_id not in data[server_id]["mods"]):
         await ctx.respond(f"<@{user_id}> you need to be a moderator for use this command")
         return
     
@@ -174,24 +173,26 @@ async def addrole(
         await ctx.respond(f"<@{user_id}> enter only numbers not characters")
         return
 
-    if ctx.member.id in data["servers"][server_id] or user_id == ctx.get_guild().owner_id:
+    if ctx.member.id in data[server_id]["mods"] or user_id == ctx.get_guild().owner_id:
         try:
-            if role_id in data["roles"]:
+            if role_id in data[server_id]["roles"]:
 
-                data["roles"] = {role_id:price}
+                data[server_id]["roles"][role_id] = price
                 write_list("data.bin",data)
 
-                await ctx.respond(f"<@&{role_id}> is already saved before.\n<@&{role_id}> is now **{data['roles'][role_id]}{papir}**")
+                await ctx.respond(f"<@&{role_id}> is already saved before.\n<@&{role_id}> is now **{data[server_id]['roles'][role_id]}{papir}**")
                 return
         except:
             print('something went wrong')
 
         else:
-            if str(role_id) not in data["roles"]:
-                data["roles"][role_id] = price
+            if server_id not in data:
+                data[server_id] = {"roles":{},"mods":[ctx.get_guild().owner_id]}
+
+            if str(role_id) not in data[server_id]["roles"]:
+                data[server_id]["roles"] = {role_id:price}
                 
             write_list("data.bin",data)
-            print(data)
             print("server saved to data.json")
             await ctx.respond(f"<@&{role_id}> added: **{price}{papir}**")
     else:
@@ -201,7 +202,7 @@ async def addrole(
 @lightbulb.option("username", "select an user to make mod", type=hikari.User)
 @lightbulb.command("addmod", "Add a moderator!", pass_options=True)
 @lightbulb.implements(lightbulb.SlashCommand) 
-async def addrole(
+async def addmod(
     ctx: lightbulb.SlashContext,
     username: Optional[hikari.User] = None) -> None:
 
@@ -216,12 +217,12 @@ async def addrole(
         await ctx.respond(f"<@{username.id}> you need to be a moderator for use this command")
         return
 
-    if "servers" not in data:
-        data["servers"] = {}
-    if server_id not in data["servers"]:
-        data["servers"][server_id] = [ctx.get_guild().owner_id]
-    if username.id not in data["servers"][server_id]:
-        data["servers"][server_id].append(username.id)
+    if server_id not in data:
+        data[server_id] = {"roles":{},"mods":[ctx.get_guild().owner_id]}
+
+    if username.id not in data[server_id]["mods"]:
+        data[server_id]["mods"].append(username.id)
+
     else:
         await ctx.respond(f"<@{username.id}> is allready a moderator")
         return
@@ -231,10 +232,10 @@ async def addrole(
     await ctx.respond(f"<@{username.id}> is now a moderator")
 
 @bot.command
-@lightbulb.option("username", "select an user to make mod", type=hikari.User)
-@lightbulb.command("removemod", "Add a moderator!", pass_options=True)
+@lightbulb.option("username", "select an moderator to remove", type=hikari.User)
+@lightbulb.command("removemod", "remove a moderator!", pass_options=True)
 @lightbulb.implements(lightbulb.SlashCommand) 
-async def addrole(
+async def removemod(
     ctx: lightbulb.SlashContext,
     username: Optional[hikari.User] = None) -> None:
 
@@ -243,24 +244,32 @@ async def addrole(
 
     data = read_list("data.bin")
 
-    if(user_id != ctx.get_guild().owner_id):
+    if user_id != ctx.get_guild().owner_id:
         print(user_id)
         print(ctx.get_guild().owner_id)
-        await ctx.respond(f"<@{username.id}> you need to be a moderator for use this command")
+        await ctx.respond(f"<@{user_id}> you need to be a moderator for use this command")
         return
     
+    if username.id == ctx.get_guild().owner_id:
+        await ctx.respond(f"<@{username.id}> you cannot delete the server creator")
+        return
+
+    if ctx.get_guild().owner_id not in data[server_id]["mods"]:
+        data[server_id]["mods"].append(ctx.get_guild().owner_id)
+
     if server_id not in data:
         await ctx.respond(f"<@{username.id}> this server is not saved before you need to run /addrole command")
-
+        return
+    
     if username.id not in data[server_id]["mods"]:
         await ctx.respond(f"<@{username.id}> is not a moderator")
+        return
 
     else:
-        del data[server_id]["mods"][username.id]
+        data[server_id]["mods"].remove(username.id)
+        write_list("data.bin",data)
         await ctx.respond(f"<@{username.id}> is now not a moderator")
         return
-        
-    write_list("data.bin",data)
 
 # Run the bot
 bot.run()
