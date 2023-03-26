@@ -32,7 +32,7 @@ def read_list(file):
         output = pickle.load(fp)
         fp.close()
     return output
-    
+
 try:
     bank = read_list('bank.bin')
 except:
@@ -62,7 +62,10 @@ async def vote(ctx):
     # Check if the user has already used the command within the cooldown time
     if user_id in bank and (now - bank[user_id]['last_used']) < cooldown_time and user_id not in testers:
         time_left = int(cooldown_time - (now - bank[user_id]['last_used']))
-        await ctx.respond(f"<@{user_id}>, you you already get your {papir}. \nTry again in **{time_left // 3600}H {(time_left % 3600) // 60}M**.\nyou have {bank[user_id]['balance']}{papir}")
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{user_id}>, you you already get your {papir}. \nTry again in **{time_left // 3600}H {(time_left % 3600) // 60}M**.\nyou have {bank[user_id]['balance']}{papir}",
+            colour=random.randint(0, 0xFFFFFF)))
         return  
     
     # Update the user's balance in the bank data
@@ -73,12 +76,12 @@ async def vote(ctx):
     else:
         bank[user_id] = {'balance': reward, 'last_used': now}
 
-    await ctx.respond(f"<@{user_id}>, you received **{reward}{coin[reward-1]}**! \nNow you have **{bank[user_id]['balance']}{papir}**.")
+    await ctx.respond(hikari.Embed(
+        title=None,
+        description=f"<@{user_id}>, you received **{reward}{coin[reward-1]}**! \nNow you have **{bank[user_id]['balance']}{papir}**.",
+        colour=random.randint(0, 0xFFFFFF)))
 
     write_list("bank.bin",bank)
-
-import random
-import discord
 
 @bot.command()
 @lightbulb.command("ping", "Get the current status of the bot")
@@ -90,21 +93,24 @@ async def ping(ctx):
     ram_usage = f"{psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2:.2f}MB"
     data_size = f"{os.path.getsize('./bank.bin') + os.path.getsize('./data.bin') / 1024:.2f}KB"
 
-    # Generate a random color
-    color = random.randint(0, 0xFFFFFF)
-
-    # Create the embed message with the status information and random color
-    embed = discord.Embed(title="Pong🎾", description=f"ping: **{ping_time}** \nservers: **{servers}** \nram usage: **{ram_usage}** \ndata size: **{data_size}**", color=color)
-
     # Send the embed message
-    await ctx.respond(embed=embed)
+    await ctx.respond(hikari.Embed(
+        title="Pong :ping_pong:",
+        description=f"ping: **{ping_time}** \nservers: **{servers}** \nram usage: **{ram_usage}** \ndata size: **{data_size}**",
+        colour=random.randint(0, 0xFFFFFF)))
 
 
 @bot.command()
 @lightbulb.command("invite", "Get an invite link for the bot")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def invite(ctx):
-    await ctx.respond("you can use this link to invite me to any server\nplease don't spam\nhttps://discord.com/api/oauth2/authorize?client_id=1084422933805535312&permissions=8&scope=bot")
+
+    # Send the embed message
+    await ctx.respond(hikari.Embed(
+        title="Link",
+        description=f"you can use this link to invite me to any server\nplease don't spam",
+        colour=random.randint(0, 0xFFFFFF),
+        url="https://discord.com/api/oauth2/authorize?client_id=1084422933805535312&permissions=8&scope=bot"))
 
 @bot.command
 @lightbulb.option("rolename", "The name of the role you want to purchase", type=hikari.Role)
@@ -123,7 +129,11 @@ async def role(
     try:
         count = int(data[server_id]["roles"][str(rolename.id)])
     except:
-        await ctx.respond(f"<@{user_id}> this role is not in sale")
+        # Send the embed message
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{user_id}> this role is not in sale",
+            colour=random.randint(0, 0xFFFFFF)))
         return
     
     user_roles = [role.id for role in ctx.member.get_roles()]
@@ -136,18 +146,30 @@ async def role(
                 balance -= count
 
                 write_list("bank.bin",bank)
-                
-                await ctx.respond(f"<@{user_id}> role gived\nnow you have {balance}{papir}")
+            
+                await ctx.respond(hikari.Embed(
+                    title=None,
+                    description=f"<@{user_id}> role gived\nnow you have {balance}{papir}",
+                    colour=random.randint(0, 0xFFFFFF)))
                 await bot.rest.add_role_to_member(user=user_id, guild=ctx.guild_id, role=rolename.id)
                 return
             else:
-                await ctx.respond(f"<@{user_id}> you dont have {count}{papir}")
+                await ctx.respond(hikari.Embed(
+                    title=None,
+                    description=f"<@{user_id}> you dont have {count}{papir}",
+                    colour=random.randint(0, 0xFFFFFF)))
                 return
         else:
-            await ctx.respond(f"<@{user_id}> you already have this role")
+            await ctx.respond(hikari.Embed(
+                title=None,
+                description=f"<@{user_id}> you already have this role",
+                colour=random.randint(0, 0xFFFFFF)))
             return
     else:
-        await ctx.respond(f"<@{user_id}> you dont have an account yet, use /vote to get money")
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{user_id}> you dont have an account yet, use **/vote** to get money",
+            colour=random.randint(0, 0xFFFFFF)))
         return
     
 @bot.command
@@ -175,13 +197,19 @@ async def addrole(
     write_list("data.bin",data)
 
     if(user_id != ctx.get_guild().owner_id or user_id not in data[server_id]["mods"]):
-        await ctx.respond(f"<@{user_id}> you need to be a moderator for use this command")
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{user_id}> you need to be a moderator for use this command",
+            colour=random.randint(0, 0xFFFFFF)))
         return
     
     try:
         price = int(price)
     except:
-        await ctx.respond(f"<@{user_id}> enter only numbers not characters")
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{user_id}> enter only numbers not characters",
+            colour=random.randint(0, 0xFFFFFF)))
         return
 
     if ctx.member.id in data[server_id]["mods"] or user_id == ctx.get_guild().owner_id:
@@ -191,7 +219,10 @@ async def addrole(
                 data[server_id]["roles"][role_id] = price
                 write_list("data.bin",data)
 
-                await ctx.respond(f"<@&{role_id}> is already saved before.\n<@&{role_id}> is now **{data[server_id]['roles'][role_id]}{papir}**")
+                await ctx.respond(hikari.Embed(
+                    title=None,
+                    description=f"<@&{role_id}> is already saved before.\n<@&{role_id}> is now **{data[server_id]['roles'][role_id]}{papir}**",
+                    colour=random.randint(0, 0xFFFFFF)))
                 return
         except:
             print('something went wrong')
@@ -205,9 +236,15 @@ async def addrole(
                 
             write_list("data.bin",data)
             print("server saved to data.json")
-            await ctx.respond(f"<@&{role_id}> added: **{price}{papir}**")
+            await ctx.respond(hikari.Embed(
+                title=None,
+                description=f"<@&{role_id}> added: **{price}{papir}**",
+                colour=random.randint(0, 0xFFFFFF)))
     else:
-        await ctx.respond(f"<@{user_id}>you need to be a moderator to use this command")
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{user_id}>you need to be a moderator to use this command",
+            colour=random.randint(0, 0xFFFFFF)))
 
 @bot.command
 @lightbulb.option("username", "select an user to make mod", type=hikari.User)
@@ -225,7 +262,10 @@ async def addmod(
     if(user_id != ctx.get_guild().owner_id):
         print(user_id)
         print(ctx.get_guild().owner_id)
-        await ctx.respond(f"<@{username.id}> you need to be a moderator for use this command")
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{username.id}> you need to be a moderator for use this command",
+            colour=random.randint(0, 0xFFFFFF)))
         return
 
     if server_id not in data:
@@ -235,12 +275,18 @@ async def addmod(
         data[server_id]["mods"].append(username.id)
 
     else:
-        await ctx.respond(f"<@{username.id}> is allready a moderator")
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{username.id}> is allready a moderator",
+            colour=random.randint(0, 0xFFFFFF)))
         return
         
     write_list("data.bin",data)
 
-    await ctx.respond(f"<@{username.id}> is now a moderator")
+    await ctx.respond(hikari.Embed(
+        title=None,
+        description=f"<@{username.id}> is now a moderator",
+        colour=random.randint(0, 0xFFFFFF)))
 
 @bot.command
 @lightbulb.option("username", "select an moderator to remove", type=hikari.User)
@@ -256,30 +302,43 @@ async def removemod(
     data = read_list("data.bin")
 
     if user_id != ctx.get_guild().owner_id:
-        print(user_id)
-        print(ctx.get_guild().owner_id)
-        await ctx.respond(f"<@{user_id}> you need to be a moderator for use this command")
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{user_id}> you need to be a moderator for use this command",
+            colour=random.randint(0, 0xFFFFFF)))
         return
     
     if username.id == ctx.get_guild().owner_id:
-        await ctx.respond(f"<@{username.id}> you cannot delete the server creator")
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{username.id}> you cannot delete the server creator",
+            colour=random.randint(0, 0xFFFFFF)))
         return
 
     if ctx.get_guild().owner_id not in data[server_id]["mods"]:
         data[server_id]["mods"].append(ctx.get_guild().owner_id)
 
     if server_id not in data:
-        await ctx.respond(f"<@{username.id}> this server is not saved before you need to run /addrole command")
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{username.id}> this server is not saved before you need to run **/addrole** command",
+            colour=random.randint(0, 0xFFFFFF)))
         return
     
     if username.id not in data[server_id]["mods"]:
-        await ctx.respond(f"<@{username.id}> is not a moderator")
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{username.id}> is not a moderator",
+            colour=random.randint(0, 0xFFFFFF)))
         return
 
     else:
         data[server_id]["mods"].remove(username.id)
         write_list("data.bin",data)
-        await ctx.respond(f"<@{username.id}> is now not a moderator")
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{username.id}> is now not a moderator",
+            colour=random.randint(0, 0xFFFFFF)))
         return
 
 # Run the bot
