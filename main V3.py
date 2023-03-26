@@ -5,10 +5,11 @@
 
 import hikari,psutil,lightbulb,random,pickle,time,os
 from typing import Optional
+from datetime import datetime
 
 coin = ["<:1:1084777301612437504>","<:2:1084777303223062609>","<:3:1084777306691731527>","<:4:1084777309103468584>","<:5:1084777310932193300>"]
 papir = "<:papir:1084796977767776256>"
-testers = ["852235304965242891","1086242607933440030"]
+testers = ["852235304965242891","1086242607933440030","755088653835042906"]
 data = {}
 cooldown_time = 12 * 60 * 60
 
@@ -48,13 +49,19 @@ except:
 async def on_started(event):
     print(f'bot has started!')
 
+@bot.listen()
+async def on_guild_leave(event: hikari.GuildLeaveEvent) -> None:
+    data = read_list("data.bin")
+    if str(event.guild_id) in data:
+        del data[str(event.guild_id)]
+        write_list("data.bin",data)
+
 @bot.command()
 @lightbulb.command("vote", "Get daily money by voting for the bot")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def vote(ctx):
     # Get the user's ID, username, and the current time
     user_id = str(ctx.author.id)
-    username = ctx.author.username
     now = time.time()
     reward = random.randint(1, 5)
     bank = read_list('bank.bin')
@@ -91,7 +98,7 @@ async def ping(ctx):
     ping_time = f"{bot.heartbeat_latency*1000:.0f}ms"
     servers = sum(1 for _ in await bot.rest.fetch_my_guilds())
     ram_usage = f"{psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2:.2f}MB"
-    data_size = f"{os.path.getsize('./bank.bin') + os.path.getsize('./data.bin') / 1024:.2f}KB"
+    data_size = f"{(os.path.getsize('./bank.bin') + os.path.getsize('./data.bin')) / 1024:.2f}KB"
 
     # Send the embed message
     await ctx.respond(hikari.Embed(
@@ -340,6 +347,62 @@ async def removemod(
             description=f"<@{username.id}> is now not a moderator",
             colour=random.randint(0, 0xFFFFFF)))
         return
+    
+@bot.command()
+@lightbulb.command("balance", "Get your inventory")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def balance(ctx):
+    # Get the user's ID, username, and the current time
+    user_id = str(ctx.author.id)
+    bank = read_list('bank.bin')
 
+    if user_id not in bank:
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{user_id}> you dont have an account yet use **/vote** to get money and account",
+            colour=random.randint(0, 0xFFFFFF)))
+        return
+    else:
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"**<@{user_id}>'s account:**\n• balance: **{bank[user_id]['balance']}**{papir}\n• last used: **{datetime.fromtimestamp(bank[user_id]['last_used'])}**",
+            colour=random.randint(0, 0xFFFFFF)))
+        
+@bot.command
+@lightbulb.option("rolename",  "The name of the role you want to add", type=hikari.Role)
+@lightbulb.command("removerole", "Add a new role to the server with a specified price", pass_options=True)
+@lightbulb.implements(lightbulb.SlashCommand) 
+async def removerole(
+    ctx: lightbulb.SlashContext,
+    rolename: Optional[hikari.Role] = None) -> None:
+
+    user_id = ctx.member.id
+    server_id = str(ctx.guild_id)
+
+    if(user_id != ctx.get_guild().owner_id or user_id not in data[server_id]["mods"]):
+        print(user_id,type(user_id))
+        print(ctx.get_guild().owner_id,type(ctx.get_guild().owner_id))
+        print(data[server_id]["mods"])
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{user_id}> you need to be a moderator for use this command",
+            colour=random.randint(0, 0xFFFFFF)))
+        return
+    
+    if str(rolename.id) in data[server_id]["roles"]:
+        del data[server_id]["roles"][str(rolename.id)]
+        write_list("data.bin",data)
+
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@&{rolename.id}> is deleted",
+            colour=random.randint(0, 0xFFFFFF)))
+        return
+    else:
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"there is not a saved role named <@&{rolename.id}>",
+            colour=random.randint(0, 0xFFFFFF)))
+    
 # Run the bot
 bot.run()
