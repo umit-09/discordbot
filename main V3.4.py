@@ -123,7 +123,7 @@ async def invite(ctx):
 @lightbulb.option("rolename", "The name of the role you want to purchase", type=hikari.Role)
 @lightbulb.command("buyrole", "Purchase a role using your money", pass_options=True)
 @lightbulb.implements(lightbulb.SlashCommand) 
-async def role(
+async def buyrole(
     ctx: lightbulb.SlashContext,
     rolename: Optional[hikari.Role] = None,) -> None:
 
@@ -412,7 +412,7 @@ async def removerole(
             colour=random.randint(0, 0xFFFFFF)))
         
 @bot.command()
-@lightbulb.command("serverinfo", "Get your inventory")
+@lightbulb.command("serverinfo", "Get server information")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def serverinfo(ctx: lightbulb.SlashContext):
     # Get the user's ID, username, and the current time
