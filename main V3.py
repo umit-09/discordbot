@@ -379,6 +379,13 @@ async def removerole(
     user_id = ctx.member.id
     server_id = str(ctx.guild_id)
 
+    if user_id != ctx.get_guild().owner_id:
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{user_id}> you need to be a moderator for use this command",
+            colour=random.randint(0, 0xFFFFFF)))
+        return
+    
     if(user_id != ctx.get_guild().owner_id or user_id not in data[server_id]["mods"]):
         print(user_id,type(user_id))
         print(ctx.get_guild().owner_id,type(ctx.get_guild().owner_id))
