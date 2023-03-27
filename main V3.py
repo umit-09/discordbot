@@ -37,12 +37,12 @@ def read_list(file):
 try:
     bank = read_list('bank.bin')
 except:
-    write_list('bank.bin',{"852235304965242891":{"balance":0,"last_used":1679230211.9616897}})
+    write_list('bank.bin',{})
 
 try:
     data = read_list('data.bin')
 except:
-    write_list('data.bin',{"0":{"roles":{},"mods":[]}})
+    write_list('data.bin',{})
 
 # Define an event listener for when the bot starts
 @bot.listen(hikari.StartedEvent)
