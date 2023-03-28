@@ -3,7 +3,7 @@
 # ©      copyright 
 #   all rights reserved
 
-import hikari,psutil,lightbulb,random,pickle,time,os
+import hikari,psutil,lightbulb,random,pickle,time,os,json
 from typing import Optional
 from datetime import datetime
 
@@ -24,7 +24,9 @@ def write_list(file,input):
     with open(file, 'wb') as fp:
         pickle.dump(input, fp)
         fp.close()
-    print(f"\n{file}\n{input}")
+    os.system("cls")
+    print(f"{file}:\n")
+    print(json.dumps(input, indent=4))
 
 # Read list to memory
 def read_list(file):
