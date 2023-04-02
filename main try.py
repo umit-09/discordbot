@@ -14,10 +14,8 @@ data = {}
 cooldown_time = 12 * 60 * 60
 
 with open('secret.secret', 'r') as f:
-    TOKENa = f.readline()
-    print(TOKENa)
+    bot = lightbulb.BotApp(token=f.readline())
 
-bot = lightbulb.BotApp(token=TOKENa)
 
 # write list to binary file
 def write_list(file,input):
@@ -91,7 +89,7 @@ async def vote(ctx):
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{user_id}>, you you already get your {papir}. \nTry again in **{time_left // 3600}H {(time_left % 3600) // 60}M**.\nyou have {bank[user_id]['balance']}{papir}",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return  
     
     # Update the user's balance in the bank data
@@ -100,12 +98,13 @@ async def vote(ctx):
         bank[user_id]['last_used'] = now
 
     else:
-        bank[user_id] = {'balance': reward, 'last_used': now}
+        bank[user_id] = {'balance': reward, 'last_used': now, "banner": "0"}
 
     await ctx.respond(hikari.Embed(
         title=None,
         description=f"<@{user_id}>, you received **{reward}{coin[reward-1]}**! \nNow you have **{bank[user_id]['balance']}{papir}**.",
-        colour=random.randint(0, 0xFFFFFF)))
+        colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
+
 
     write_list("bank.bin",bank)
 
@@ -159,7 +158,7 @@ async def buyrole(
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{user_id}> this role is not in sale",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
     
     user_roles = [role.id for role in ctx.member.get_roles()]
@@ -176,14 +175,14 @@ async def buyrole(
                 await ctx.respond(hikari.Embed(
                     title=None,
                     description=f"<@{user_id}> role gived\nnow you have {balance}{papir}",
-                    colour=random.randint(0, 0xFFFFFF)))
+                    colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
                 await bot.rest.add_role_to_member(user=user_id, guild=ctx.guild_id, role=rolename.id)
                 return
             else:
                 await ctx.respond(hikari.Embed(
                     title=None,
                     description=f"<@{user_id}> you dont have {count}{papir}",
-                    colour=random.randint(0, 0xFFFFFF)))
+                    colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
                 return
         else:
             await ctx.respond(hikari.Embed(
@@ -226,7 +225,7 @@ async def addrole(
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{user_id}> you need to be a moderator for use this command",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
     
     try:
@@ -235,7 +234,7 @@ async def addrole(
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{user_id}> enter only numbers not characters",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
 
     if ctx.member.id in data[server_id]["mods"] or user_id == ctx.get_guild().owner_id:
@@ -248,7 +247,7 @@ async def addrole(
                 await ctx.respond(hikari.Embed(
                     title=None,
                     description=f"<@&{role_id}> is already saved before.\n<@&{role_id}> is now **{data[server_id]['roles'][role_id]}{papir}**",
-                    colour=random.randint(0, 0xFFFFFF)))
+                    colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
                 return
         except:
             print('something went wrong')
@@ -265,12 +264,12 @@ async def addrole(
             await ctx.respond(hikari.Embed(
                 title=None,
                 description=f"<@&{role_id}> added: **{price}{papir}**",
-                colour=random.randint(0, 0xFFFFFF)))
+                colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
     else:
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{user_id}>you need to be a moderator to use this command",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
 
 @bot.command
 @lightbulb.option("username", "select an user to make mod", type=hikari.User)
@@ -291,7 +290,7 @@ async def addmod(
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{username.id}> you need to be a moderator for use this command",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
 
     if server_id not in data:
@@ -304,7 +303,7 @@ async def addmod(
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{username.id}> is allready a moderator",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
         
     write_list("data.bin",data)
@@ -312,7 +311,7 @@ async def addmod(
     await ctx.respond(hikari.Embed(
         title=None,
         description=f"<@{username.id}> is now a moderator",
-        colour=random.randint(0, 0xFFFFFF)))
+        colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
 
 @bot.command
 @lightbulb.option("username", "select an moderator to remove", type=hikari.User)
@@ -331,14 +330,14 @@ async def removemod(
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{user_id}> you need to be a moderator for use this command",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
     
     if username.id == ctx.get_guild().owner_id:
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{username.id}> you cannot delete the server creator",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
 
     if ctx.get_guild().owner_id not in data[server_id]["mods"]:
@@ -348,14 +347,14 @@ async def removemod(
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{username.id}> this server is not saved before you need to run **/addrole** command",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
     
     if username.id not in data[server_id]["mods"]:
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{username.id}> is not a moderator",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
 
     else:
@@ -364,7 +363,7 @@ async def removemod(
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{username.id}> is now not a moderator",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
     
 @bot.command()
@@ -379,13 +378,13 @@ async def balance(ctx):
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{user_id}> you dont have an account yet use **/vote** to get money and account",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
     else:
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"**<@{user_id}>'s account:**\n• balance: **{bank[user_id]['balance']}**{papir}\n• last used: **{datetime.fromtimestamp(bank[user_id]['last_used'])}**",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         
 @bot.command
 @lightbulb.option("rolename",  "The name of the role you want to add", type=hikari.Role)
@@ -402,7 +401,7 @@ async def removerole(
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{user_id}> you need to be a moderator for use this command",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
     
     if(user_id != ctx.get_guild().owner_id or user_id not in data[server_id]["mods"]):
@@ -412,7 +411,7 @@ async def removerole(
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{user_id}> you need to be a moderator for use this command",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
     
     if str(rolename.id) in data[server_id]["roles"]:
@@ -422,13 +421,13 @@ async def removerole(
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@&{rolename.id}> is deleted",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         return
     else:
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"there is not a saved role named <@&{rolename.id}>",
-            colour=random.randint(0, 0xFFFFFF)))
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
         
 @bot.command()
 @lightbulb.command("serverinfo", "Get server information")
@@ -455,6 +454,85 @@ async def serverinfo(ctx: lightbulb.SlashContext):
             title=None,
             description=f"this server has nothing",
             colour=random.randint(0, 0xFFFFFF)))
+        
+@bot.command
+@lightbulb.option("bannername", "The name of the banner you want to purchase", type=str)
+@lightbulb.command("buybanner", "Purchase a banner using your money", pass_options=True)
+@lightbulb.implements(lightbulb.SlashCommand) 
+async def buyrbanner(
+    ctx: lightbulb.SlashContext,
+    bannername: str = None) -> None:
+
+    user_id = ctx.author.id
+
+    banners = read_list("banner.bin")
+    bank = read_list("bank.bin")
+
+    try:
+        count = int(banners[bannername])
+    except:
+        # Send the embed message
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{user_id}> this banner is not in sale",
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
+        return
     
+    
+
+    if str(user_id) in bank:
+        
+        try:
+            print(bank[str(user_id)]["banner"])
+        except KeyError:
+            bank[str(user_id)]["banner"] = "0"
+            write_list("bank.bin", bank)
+            # Send the embed message
+            await ctx.respond(hikari.Embed(
+                title=None,
+                description=f"<@{user_id}> you dont have an account yet, use **/vote** to get money",
+                colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
+            return
+        
+        if bank[str(user_id)]["banner"] != bannername:
+            
+            if bank[str(user_id)]['balance'] >= count:
+                
+                balance = int(bank[str(user_id)]['balance'])
+                bank[str(user_id)]['balance'] = balance - count
+                bank[str(user_id)]["banner"] = bannername
+                balance -= count
+                
+                write_list("bank.bin", bank)
+                await ctx.respond(hikari.Embed(
+                    title=None,
+                    description=f"<@{user_id}> banner gived\nnow you have {balance}{papir}",
+                    colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
+                return
+            
+            else:
+                
+                await ctx.respond(hikari.Embed(
+                    title=None,
+                    description=f"<@{user_id}> you dont have {count}{papir}",
+                    colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
+                return
+            
+        else:
+            
+            await ctx.respond(hikari.Embed(
+                title=None,
+                description=f"<@{user_id}> you already have this banner",
+                colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
+            return
+        
+    else:
+        
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{user_id}> you dont have an account yet, use **/vote** to get money",
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['banner']}.png" if bank[str(user_id)]['banner'] != "0" else None))
+        return
+
 # Run the bot
 bot.run()
