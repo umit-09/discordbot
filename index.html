@@ -53,27 +53,51 @@
     </head>
     <body>
         <div class="container">
-            <img src="./assets/banner/b1.png" alt="b1" style="width:100%;" draggable="false">
+            <img src="./assets/banner/b1.png" alt="b1" style="width:100%;" draggable="false" data-secret="0">
             <div class="centered">
                 <h1 id="b1-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B1</h1>
             </div>
         </div>
         <div class="container">
-            <img src="./assets/banner/b38748847823.png" alt="b38748847823" style="width:100%;" draggable="false">
+            <img src="./assets/banner/b38748847823.png" alt="b38748847823" style="width:100%;" draggable="false" data-secret="1">
             <div class="centered">
                 <h1 id="b38748847823-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B38748847823</h1>
             </div>
         </div>
         <div class="container">
-            <img src="./assets/banner/b2.png" alt="b2" style="width:100%;" draggable="false">
+            <img src="./assets/banner/b2.png" alt="b2" style="width:100%;" draggable="false" data-secret="0">
             <div class="centered">
                 <h1 id="b2-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B2</h1>
             </div>
         </div>
         <div class="container">
-            <img src="./assets/banner/b3.png" alt="b3" style="width:100%;" draggable="false">
+            <img src="./assets/banner/b3.png" alt="b3" style="width:100%;" draggable="false" data-secret="0">
             <div class="centered">
                 <h1 id="b3-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B3</h1>
+            </div>
+        </div>
+        <div class="container">
+            <img src="./assets/banner/b4.png" alt="b4" style="width:100%;" draggable="false" data-secret="0">
+            <div class="centered">
+                <h1 id="b4-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B4</h1>
+            </div>
+        </div>
+        <div class="container">
+            <img src="./assets/banner/b5.png" alt="b5" style="width:100%;" draggable="false" data-secret="0">
+            <div class="centered">
+                <h1 id="b5-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B5</h1>
+            </div>
+        </div>
+        <div class="container">
+            <img src="./assets/banner/b6.png" alt="b6" style="width:100%;" draggable="false" data-secret="0">
+            <div class="centered">
+                <h1 id="b6-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B6</h1>
+            </div>
+        </div>
+        <div class="container">
+            <img src="./assets/banner/b7.png" alt="b7" style="width:100%;" draggable="false" data-secret="0">
+            <div class="centered">
+                <h1 id="b7-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B7</h1>
             </div>
         </div>
         <script>
@@ -83,6 +107,11 @@
                 const containers = document.querySelectorAll('.container');
                 containers.forEach(container => {
                 const bannerId = container.querySelector('img').alt;
+                const visibility = container.querySelector('img').dataset.secret;
+                console.log(container.querySelector('img').dataset.secret);
+                if(visibility == "1"){
+                    container.querySelector('img').src = "./assets/banner/secret.png"
+                }
                 const bannerPrice = prices[bannerId];
                 const bannerTitle = container.querySelector('.centered h1');
                 bannerTitle.textContent = `${bannerId.toUpperCase()}: ${bannerPrice}`;
