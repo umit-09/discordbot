@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bank Balance Checker</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+    <style>
+      /* Body and background */
+      body {
+        background-color: #2e2e2e;
+        color: #d6c2b6;
+        font-family: 'Poppins', sans-serif;
+      }
+      
+      /* Headings */
+      h1 {
+        color: #f0a8c8;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+      
+      /* User info container */
+      #user-info {
+        background-color: #d6c2b6;
+        border-radius: 0.5rem;
+        margin: 2rem auto;
+        max-width: 30rem;
+        padding: 2rem;
+        text-align: center;
+      }
+      
+      /* User info paragraphs */
+      #user-info p {
+        color: #2e2e2e;
+        font-size: 1.2rem;
+        margin: 0.5rem 0;
+      }
+    </style>
+    
+  </head>
+  <body>
+    <h1>Bank Balance Checker</h1>
+    <div id="user-info"></div>
+
+    <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get("id");
+      const apiUrl = "./bank.bin";
+
+      fetch(apiUrl)
+        .then((response) => response.json())
+        .then((jsonData) => {
+          if (jsonData[userId]) {
+            const userInfo = document.getElementById("user-info");
+
+            const balance = jsonData[userId].balance;
+            const lastUsed = new Date(jsonData[userId].last_used * 1000);
+            const banner = jsonData[userId].banner;
+
+            userInfo.innerHTML = `
+              <p>Balance: ${balance}</p>
+              <p>Last used: ${lastUsed.toLocaleString()}</p>
+              <p>Banner: ${banner}</p>
+            `;
+          } else {
+            console.error(``);
+            userInfo.innerHTML = `<p>User with ID ${userId} not found.</p>`;
+          }
+        })
+        .catch((error) => {
+          userInfo.innerHTML = `An error occurred: ${error}`;
+        });
+    </script>
+  </body>
+</html>
