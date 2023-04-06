@@ -1,123 +1,134 @@
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>banners</title>
-        <style>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Images</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+	<style>
+        /* Body and background */
+        body {
+            background-color: #2e2e2e;
+            color: #686868;
+            font-family: 'Poppins', sans-serif;
+            user-select: none;
+        }
+    
+        /* Headings */
+        h1 {
+            user-select: none;
+            background-color: #f0a8c8;
+            color: #686868;
+            font-size: 25px;
+        }
+    
+        /* User info container */
+        .container {
+            position: relative;
+            background-color: #d6c2b6;
+            border: none;
+            margin-bottom: 30px;
+            margin-left: 40px;
+            margin-right: 40px;
+            display: inline-block;
+            vertical-align: top;
+            box-sizing: border-box;
+            padding: 10px;
+            padding-bottom: 30px;
+            margin-top: 40px;
+        }
+    
+        .container img {
+            max-width: 100%;
+            border: 2px solid black;
+            margin-bottom: 10px;
+        }
+    
+        .container .centered {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    
+        @media screen and (min-width: 768px) {
             .container {
-                position: relative;
-                text-align: center;
-                color: white;
-                border: 2px solid black;
+                width: 33.33%;
+                display: inline-block;
+                margin-bottom: 0;
+            }
+        }
+    
+        @media screen and (min-width: 992px) {
+            .container {
+                width: 25%;
+                display: inline-block;
+            }
+        }
+    
+        @media screen and (min-width: 1200px) {
+            .container {
+                width: 20%;
+                display: inline-block;
+            }
+        }
+    
+        @media screen and (max-width: 767px) {
+            .container {
                 width: 100%;
-                margin-bottom: 20px;
             }
+        }
+    </style>
+    
+</head>
+<body>
+	<div id="image-container"></div>
+	<script>
+		// Specify the folder path where your images are located
+		const imagePath = "./assets/banner";
 
-            .centered {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-            }
+		// An array of supported image extensions
+		const imageExtensions = [".png"];
 
-            /* Media queries for different device sizes */
-            @media screen and (min-width: 768px) {
-                .container {
-                    width: 33.33%;
-                    display: inline-block;
-                    margin-bottom: 0;
-                }
-            }
-
-            @media screen and (min-width: 992px) {
-                .container {
-                    width: 25%;
-                    display: inline-block;
-                }
-            }
-
-            @media screen and (min-width: 1200px) {
-                .container {
-                    width: 20%;
-                    display: inline-block;
-                }
-            }
-
-            @media screen and (max-width: 767px) {
-                .container {
-                    width: 100%;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <img src="./assets/banner/b1.png" alt="b1" style="width:100%;" draggable="false" data-secret="0">
-            <div class="centered">
-                <h1 id="b1-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B1</h1>
-            </div>
-        </div>
-        <div class="container">
-            <img src="./assets/banner/b38748847823.png" alt="b38748847823" style="width:100%;" draggable="false" data-secret="1">
-            <div class="centered">
-                <h1 id="b38748847823-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B38748847823</h1>
-            </div>
-        </div>
-        <div class="container">
-            <img src="./assets/banner/b2.png" alt="b2" style="width:100%;" draggable="false" data-secret="0">
-            <div class="centered">
-                <h1 id="b2-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B2</h1>
-            </div>
-        </div>
-        <div class="container">
-            <img src="./assets/banner/b3.png" alt="b3" style="width:100%;" draggable="false" data-secret="0">
-            <div class="centered">
-                <h1 id="b3-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B3</h1>
-            </div>
-        </div>
-        <div class="container">
-            <img src="./assets/banner/b4.png" alt="b4" style="width:100%;" draggable="false" data-secret="0">
-            <div class="centered">
-                <h1 id="b4-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B4</h1>
-            </div>
-        </div>
-        <div class="container">
-            <img src="./assets/banner/b5.png" alt="b5" style="width:100%;" draggable="false" data-secret="0">
-            <div class="centered">
-                <h1 id="b5-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B5</h1>
-            </div>
-        </div>
-        <div class="container">
-            <img src="./assets/banner/b6.png" alt="b6" style="width:100%;" draggable="false" data-secret="0">
-            <div class="centered">
-                <h1 id="b6-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B6</h1>
-            </div>
-        </div>
-        <div class="container">
-            <img src="./assets/banner/b7.png" alt="b7" style="width:100%;" draggable="false" data-secret="0">
-            <div class="centered">
-                <h1 id="b7-price" style="background-color: black; font-family: sans-serif; font-size: 20px;">B7</h1>
-            </div>
-        </div>
-        <script>
-            fetch('./banner-template.json')
-            .then(response => response.json())
-            .then(prices => {
-                const containers = document.querySelectorAll('.container');
-                containers.forEach(container => {
-                const bannerId = container.querySelector('img').alt;
-                const visibility = container.querySelector('img').dataset.secret;
-                console.log(container.querySelector('img').dataset.secret);
-                if(visibility == "1"){
-                    container.querySelector('img').src = "./assets/banner/secret.png"
-                }
-                const bannerPrice = prices[bannerId];
-                const bannerTitle = container.querySelector('.centered h1');
-                bannerTitle.textContent = `${bannerId.toUpperCase()}: ${bannerPrice}`;
+		// Get all the files in the specified folder
+		fetch(imagePath)
+			.then(response => response.text())
+			.then(html => {
+				const parser = new DOMParser();
+				const doc = parser.parseFromString(html, "text/html");
+				const images = Array.from(doc.querySelectorAll("a"))
+                .filter(link => {
+                    const href = link.getAttribute("href");
+                    return imageExtensions.some(extension => href.endsWith(extension)) && !href.endsWith("secret.png");
+                })
+                .map(link => {
+                    const href = link.getAttribute("href");
+                    const fileName = href.split("/").pop().replace(/\.[^/.]+$/, "");
+                    const src = href.includes("rgba") ? "./assets/banner/secret.png" : href;
+                    return { src, alt: fileName };
                 });
-            })
-            .catch(error => console.error(error));
-        </script>        
-    </body>
+
+				const container = document.getElementById("image-container");
+				images.forEach(image => {
+					const div = document.createElement("div");
+					div.classList.add("container");
+					container.appendChild(div);
+
+					const img = document.createElement("img");
+					img.src = image.src;
+					img.alt = image.alt;
+					img.draggable = false;
+					div.appendChild(img);
+
+					if (image.src.includes("rgba")) {
+						img.src = imagePath + "secret.png";
+					}
+
+					// Add centered text on the image
+					const h1 = document.createElement("h1");
+					h1.textContent = image.alt;
+					h1.classList.add("centered");
+					div.appendChild(h1);
+				});
+			});
+	</script>
+</body>
 </html>
