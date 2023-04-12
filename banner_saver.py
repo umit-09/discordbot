@@ -7,7 +7,7 @@ with open('banner-template.json', 'r') as f:
 
 # Write banner_template to banner.json file
 def write_banner_template():
-    with open('banner.bin', 'w') as fp:
+    with open('banner.json', 'w') as fp:
         json.dump(banner_template, fp, indent=4)
     os.system('cls')
     print('banner.json:\n')

@@ -35,21 +35,21 @@ def read_list(file):
     return output
 
 try:
-    bank = read_list('bank.bin')
+    bank = read_list('bank.json')
 except:
-    write_list('bank.bin',{})
+    write_list('bank.json',{})
 
 try:
-    data = read_list('data.bin')
+    data = read_list('data.json')
 except:
-    write_list('data.bin',{})
+    write_list('data.json',{})
 
 # Define an event listener for when the bot starts
 @bot.listen(hikari.StartedEvent)
 async def on_started(event):
     print(f'bot has started!')
     while True:
-        bank = read_list("bank.bin")
+        bank = read_list("bank.json")
         now = time.time()
         for user_id in list(bank.keys()):
             last_used = bank[user_id]["last_used"]
@@ -57,7 +57,7 @@ async def on_started(event):
             if delta > 30 * 24 * 60 * 60: # 30 days in seconds
                 # User has been inactive for a month or more, delete them
                 del bank[user_id]
-                write_list("bank.bin", bank)
+                write_list("bank.json", bank)
             else:
                 # Compute time remaining until deletion
                 remaining = datetime.timedelta(seconds=30 * 24 * 60 * 60 - delta)
@@ -68,10 +68,10 @@ async def on_started(event):
 
 @bot.listen()
 async def on_guild_leave(event: hikari.GuildLeaveEvent) -> None:
-    data = read_list("data.bin")
+    data = read_list("data.json")
     if str(event.guild_id) in data:
         del data[str(event.guild_id)]
-        write_list("data.bin",data)
+        write_list("data.json",data)
 
 @bot.command()
 @lightbulb.command("vote", "Get daily money by voting for the bot")
@@ -81,7 +81,7 @@ async def vote(ctx):
     user_id = str(ctx.author.id)
     now = time.time()
     reward = random.randint(1, 5)
-    bank = read_list('bank.bin')
+    bank = read_list('bank.json')
 
     # Check if the user has already used the command within the cooldown time
     if user_id in bank and (now - bank[user_id]['last_used']) < cooldown_time and user_id not in testers:
@@ -106,7 +106,7 @@ async def vote(ctx):
         colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['currentbanner']}.png" if str(user_id) in bank and bank[str(user_id)]['currentbanner'] != "0" else None))
 
 
-    write_list("bank.bin",bank)
+    write_list("bank.json",bank)
 
 @bot.command()
 @lightbulb.command("ping", "Get the current status of the bot")
@@ -116,7 +116,7 @@ async def ping(ctx):
     ping_time = f"{bot.heartbeat_latency*1000:.0f}ms"
     servers = sum(1 for _ in await bot.rest.fetch_my_guilds())
     ram_usage = f"{psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2:.2f}MB"
-    data_size = f"{(os.path.getsize('./bank.bin') + os.path.getsize('./data.bin')) / 1024:.2f}KB"
+    data_size = f"{(os.path.getsize('./bank.json') + os.path.getsize('./data.json')) / 1024:.2f}KB"
 
     # Send the embed message
     await ctx.respond(hikari.Embed(
@@ -148,8 +148,8 @@ async def buyrole(
     server_id = str(ctx.guild_id)
     user_id = ctx.author.id
 
-    data = read_list("data.bin")
-    bank = read_list("bank.bin")
+    data = read_list("data.json")
+    bank = read_list("bank.json")
 
     try:
         count = int(data[server_id]["roles"][str(rolename.id)])
@@ -170,7 +170,7 @@ async def buyrole(
                 bank[str(user_id)]['balance'] = balance - count
                 balance -= count
 
-                write_list("bank.bin",bank)
+                write_list("bank.json",bank)
             
                 await ctx.respond(hikari.Embed(
                     title=None,
@@ -211,8 +211,8 @@ async def addrole(
     role_id = str(rolename.id)
     user_id = ctx.member.id
 
-    data = read_list("data.bin")
-    bank = read_list("bank.bin")
+    data = read_list("data.json")
+    bank = read_list("bank.json")
 
     if(server_id not in data):
         data = {server_id:{"roles":{},"mods":[]}}
@@ -220,7 +220,7 @@ async def addrole(
     if(ctx.get_guild().owner_id not in data[server_id]["mods"]):
         data[server_id]["mods"].append(ctx.get_guild().owner_id)
 
-    write_list("data.bin",data)
+    write_list("data.json",data)
 
     if(user_id != ctx.get_guild().owner_id or user_id not in data[server_id]["mods"]):
         await ctx.respond(hikari.Embed(
@@ -243,7 +243,7 @@ async def addrole(
             if role_id in data[server_id]["roles"]:
 
                 data[server_id]["roles"][role_id] = price
-                write_list("data.bin",data)
+                write_list("data.json",data)
 
                 await ctx.respond(hikari.Embed(
                     title=None,
@@ -260,7 +260,7 @@ async def addrole(
             if str(role_id) not in data[server_id]["roles"]:
                 data[server_id]["roles"] = {role_id:price}
                 
-            write_list("data.bin",data)
+            write_list("data.json",data)
             print("server saved to data.json")
             await ctx.respond(hikari.Embed(
                 title=None,
@@ -283,7 +283,7 @@ async def addmod(
     user_id = ctx.member.id
     server_id = str(ctx.guild_id)
 
-    data = read_list("data.bin")
+    data = read_list("data.json")
 
     if(user_id != ctx.get_guild().owner_id):
         print(user_id)
@@ -307,7 +307,7 @@ async def addmod(
             colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['currentbanner']}.png" if str(user_id) in bank and bank[str(user_id)]['currentbanner'] != "0" else None))
         return
         
-    write_list("data.bin",data)
+    write_list("data.json",data)
 
     await ctx.respond(hikari.Embed(
         title=None,
@@ -325,7 +325,7 @@ async def removemod(
     user_id = ctx.member.id
     server_id = str(ctx.guild_id)
 
-    data = read_list("data.bin")
+    data = read_list("data.json")
 
     if user_id != ctx.get_guild().owner_id:
         await ctx.respond(hikari.Embed(
@@ -360,7 +360,7 @@ async def removemod(
 
     else:
         data[server_id]["mods"].remove(username.id)
-        write_list("data.bin",data)
+        write_list("data.json",data)
         await ctx.respond(hikari.Embed(
             title=None,
             description=f"<@{username.id}> is now not a moderator",
@@ -373,7 +373,7 @@ async def removemod(
 async def balance(ctx):
     # Get the user's ID, username, and the current time
     user_id = str(ctx.author.id)
-    bank = read_list('bank.bin')
+    bank = read_list('bank.json')
 
     if user_id not in bank:
         await ctx.respond(hikari.Embed(
@@ -417,7 +417,7 @@ async def removerole(
     
     if str(rolename.id) in data[server_id]["roles"]:
         del data[server_id]["roles"][str(rolename.id)]
-        write_list("data.bin",data)
+        write_list("data.json",data)
 
         await ctx.respond(hikari.Embed(
             title=None,
@@ -436,7 +436,7 @@ async def removerole(
 async def serverinfo(ctx: lightbulb.SlashContext):
     # Get the user's ID, username, and the current time
     server_id = str(ctx.guild_id)
-    data = read_list('data.bin')
+    data = read_list('data.json')
     roles = ""
     mods = ""
 
@@ -477,8 +477,8 @@ async def buybanner(
 
     user_id = ctx.author.id
 
-    banners = read_list("banner.bin")
-    bank = read_list("bank.bin")
+    banners = read_list("banner.json")
+    bank = read_list("bank.json")
 
     
     if str(user_id) in bank:
@@ -498,7 +498,7 @@ async def buybanner(
         else:
             bank[str(user_id)]['banner'] = [bank[str(user_id)]['banner'], bannername]
         
-        write_list("bank.bin", bank)
+        write_list("bank.json", bank)
         
         if bannername not in bank[str(user_id)]['banner']:
             
@@ -511,7 +511,7 @@ async def buybanner(
 
                 balance -= count
                 
-                write_list("bank.bin", bank)
+                write_list("bank.json", bank)
                 await ctx.respond(hikari.Embed(
                     title=None,
                     description=f"<@{user_id}> banner gived\nnow you have {balance}{papir}",
@@ -551,7 +551,7 @@ async def usebanner(
     bannername: str = None) -> None:
 
     user_id = ctx.author.id
-    bank = read_list("bank.bin")
+    bank = read_list("bank.json")
 
     if str(user_id) in bank:
         
@@ -566,7 +566,7 @@ async def usebanner(
         
         if bannername in bank[str(user_id)]["banner"]:
             bank[str(user_id)]["currentbanner"] = bannername
-            write_list("bank.bin",bank)
+            write_list("bank.json",bank)
             await ctx.respond(hikari.Embed(
                 title=None,
                 description=f"<@{user_id}> now you are using {bannername}",
