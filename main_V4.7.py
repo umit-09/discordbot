@@ -492,13 +492,6 @@ async def buybanner(
                 description=f"<@{user_id}> this banner is not in sale",
                 colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['currentbanner']}.png" if str(user_id) in bank and bank[str(user_id)]['currentbanner'] != "0" else None))
             return
-
-        if isinstance(bank[str(user_id)]['banner'], list):
-            bank[str(user_id)]['banner'].append(bannername)
-        else:
-            bank[str(user_id)]['banner'] = [bank[str(user_id)]['banner'], bannername]
-        
-        write_list("bank.json", bank)
         
         if bannername not in bank[str(user_id)]['banner']:
             
@@ -510,11 +503,18 @@ async def buybanner(
                 bank[str(user_id)]["banner"] = bannername
 
                 balance -= count
+
+                if isinstance(bank[str(user_id)]['banner'], list):
+                    bank[str(user_id)]['banner'].append(bannername)
+                else:
+                    bank[str(user_id)]['banner'] = [bank[str(user_id)]['banner'], bannername]
+                
+                write_list("bank.json", bank)
                 
                 write_list("bank.json", bank)
                 await ctx.respond(hikari.Embed(
                     title=None,
-                    description=f"<@{user_id}> banner gived\nnow you have {balance}{papir}",
+                    description=f"<@{user_id}> banner gived\nnow you have **{balance}{papir}**",
                     colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['currentbanner']}.png" if str(user_id) in bank and bank[str(user_id)]['currentbanner'] != "0" else None))
                 return
             
@@ -533,7 +533,7 @@ async def buybanner(
                 description=f"<@{user_id}> you already have this banner",
                 colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['currentbanner']}.png" if str(user_id) in bank and bank[str(user_id)]['currentbanner'] != "0" else None))
             return
-        
+        return        
     else:
         
         await ctx.respond(hikari.Embed(
