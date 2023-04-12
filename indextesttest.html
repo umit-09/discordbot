@@ -50,9 +50,11 @@
             }
         </style>
     </head>
-<body id="body">
-<script>
-// Specify the folder path where your images are located
+    <body id="body">
+        <!-- Images will be dynamically added here using JavaScript -->
+    </body>
+    <script>
+      // Specify the folder path where your images are located
 const imagePath = "./assets/banner";
 
 // An array of supported image extensions
@@ -66,7 +68,6 @@ fetch('https://api.github.com/repos/umit-09/discordbot/git/trees/main?recursive=
       const alt = filename.split('.').slice(0, -1).join('.'); // remove file extension from filename
       return { src: `/${item.path}`, alt };
     });
-    console.log(elements);
 
     // Get the prices from the JSON file
     fetch("./banner.bin")
@@ -80,18 +81,17 @@ fetch('https://api.github.com/repos/umit-09/discordbot/git/trees/main?recursive=
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, "text/html");
             const images = Array.from(doc.querySelectorAll("a"))
+              .filter(link => {
+                const href = link.getAttribute("href");
+                return imageExtensions.some(extension => href.endsWith(extension)) && !href.endsWith("secret.png");
+              })
+              .map(link => {
+                const href = link.getAttribute("href");
+                const fileName = href.split("/").pop().replace(/\.[^/.]+$/, "");
+                const src = href.includes("rgba") ? "./assets/banner/secret.png" : href;
+                return { src, alt: fileName };
+              });
 
-            .filter(link => {
-              const href = link.getAttribute("href");
-              return imageExtensions.some(extension => href.endsWith(extension)) && !href.endsWith("secret.png");
-            })
-            .map(link => {
-              const href = link.getAttribute("href");
-              const fileName = href.split("/").pop().replace(/\.[^/.]+$/, "");
-              const src = href.includes("rgba") ? "./assets/banner/secret.png" : href;
-              return { src, alt: fileName };
-            });
-            console.log(images);
             const container = document.getElementById("body");
             images.forEach(image => {
               const div = document.createElement("div");
@@ -113,20 +113,22 @@ fetch('https://api.github.com/repos/umit-09/discordbot/git/trees/main?recursive=
               div2.classList.add("centered");
               const h1 = document.createElement("h1");
 
-          h1.style = "background-color: black; font-family: sans-serif; font-size: 20px;";
+              h1.style = "background-color: black; font-family: sans-serif; font-size: 20px;";
           
-          div.appendChild(div2);
+              div.appendChild(div2);
 
-          const price = prices[image.alt];
-          h1.textContent = image.alt.toUpperCase() + ": "+price;
-          div2.appendChild(h1);
-        });
+              const price = prices[image.alt];
+              if (price !== undefined) {
+                h1.textContent = image.alt.toUpperCase() + ": " + price;
+              } else {
+                h1.textContent = image.alt.toUpperCase() + ": No price available";
+              }
+              div2.appendChild(h1);
+            });
+          });
       });
   })
   .catch(error => console.error(error));
-})
-.catch(error => console.error(error));
-</script>
 
-</body>
+    </script>
 </html>
