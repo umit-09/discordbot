@@ -589,6 +589,17 @@ async def usebanner(
             colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['currentbanner']}.png" if str(user_id) in bank and bank[str(user_id)]['currentbanner'] != "0" else None))
         return
 
+@bot.command()
+@lightbulb.command("invite", "Get an invite link for the bot")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def invite(ctx):
+
+    # Send the embed message
+    await ctx.respond(hikari.Embed(
+        title="Link",
+        description=f"you can use this link to invite me to any server\nplease don't spam",
+        colour=random.randint(0, 0xFFFFFF),
+        url=""))
 
 # Run the bot
 bot.run()
