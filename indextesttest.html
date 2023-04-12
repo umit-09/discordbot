@@ -52,6 +52,12 @@
     </head>
 <body id="body">
 <script>
+// Specify the folder path where your images are located
+const imagePath = "assets/banner";
+
+// An array of supported image extensions
+const imageExtensions = [".png"];
+
 fetch('https://api.github.com/repos/umit-09/discordbot/git/trees/main?recursive=1')
   .then(response => response.json())
   .then(data => {
@@ -60,38 +66,67 @@ fetch('https://api.github.com/repos/umit-09/discordbot/git/trees/main?recursive=
       const alt = filename.split('.').slice(0, -1).join('.'); // remove file extension from filename
       return { src: `/${item.path}`, alt };
     });
-    const container = document.getElementById("body");
-    elements.forEach(image => {
-      const div = document.createElement("div");
-      div.classList.add("container");
-      container.appendChild(div);
+    console.log(elements);
 
-      const img = document.createElement("img");
-      img.src = image.src;
-      img.alt = image.alt;
-      img.draggable = false;
-      img.style = "width:100%;";
-      div.appendChild(img);
+    // Get the prices from the JSON file
+    fetch("./banner.bin")
+      .then(response => response.json())
+      .then(prices => {
 
-      if (image.src.includes("rgba")) {
-        img.src = imagePath + "secret.png";
-      }
+        // Get all the files in the specified folder
+        fetch(imagePath)
+          .then(response => response.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+            const images = Array.from(doc.querySelectorAll("a"))
 
-      const div2 = document.createElement("div");
-      div2.classList.add("centered");
-      const h1 = document.createElement("h1");
+            .filter(link => {
+              const href = link.getAttribute("href");
+              return imageExtensions.some(extension => href.endsWith(extension)) && !href.endsWith("secret.png");
+            })
+            .map(link => {
+              const href = link.getAttribute("href");
+              const fileName = href.split("/").pop().replace(/\.[^/.]+$/, "");
+              const src = href.includes("rgba") ? "./assets/banner/secret.png" : href;
+              return { src, alt: fileName };
+            });
+            console.log(images);
+            const container = document.getElementById("body");
+            images.forEach(image => {
+              const div = document.createElement("div");
+              div.classList.add("container");
+              container.appendChild(div);
 
-      h1.style = "background-color: black; font-family: sans-serif; font-size: 20px;";
+              const img = document.createElement("img");
+              img.src = image.src;
+              img.alt = image.alt;
+              img.draggable = false;
+              img.style = "width:100%;";
+              div.appendChild(img);
 
-      div.appendChild(div2);
+              if (image.src.includes("rgba")) {
+                img.src = imagePath + "secret.png";
+              }
 
-      const price = prices[image.alt];
-      h1.textContent = image.alt.toUpperCase() + ": "+price;
-      div2.appendChild(h1);
-    });
+              const div2 = document.createElement("div");
+              div2.classList.add("centered");
+              const h1 = document.createElement("h1");
+
+          h1.style = "background-color: black; font-family: sans-serif; font-size: 20px;";
+          
+          div.appendChild(div2);
+
+          const price = prices[image.alt];
+          h1.textContent = image.alt.toUpperCase() + ": "+price;
+          div2.appendChild(h1);
+        });
+      });
   })
   .catch(error => console.error(error));
-
+})
+.catch(error => console.error(error));
 </script>
+
 </body>
 </html>
