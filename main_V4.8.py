@@ -1,16 +1,14 @@
 # this code made by umittadelen#4072
-#        main V4.7
+#        main V4.8
 # ©      copyright 
 #   all rights reserved
 
-import hikari,psutil,lightbulb,random,time,os,json,asyncio
+import hikari,psutil,lightbulb,random,time,os,json,asyncio,datetime
 from typing import Optional
-import datetime
 
 coin = ["<:1:1084777301612437504>","<:2:1084777303223062609>","<:3:1084777306691731527>","<:4:1084777309103468584>","<:5:1084777310932193300>"]
 papir = "<:papir:1084796977767776256>"
 testers = ["852235304965242891","1086242607933440030","755088653835042906"]
-data = {}
 cooldown_time = 12 * 60 * 60
 
 with open('secret.secret', 'r') as f:
