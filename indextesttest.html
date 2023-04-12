@@ -84,7 +84,7 @@
                     .map(link => {
                       const href = link.getAttribute("href");
                       const fileName = href.split("/").pop().replace(/\.[^/.]+$/, "");
-                      const src = href.includes("rgba") ? "./assets/banner/secret.png" : (imagePath + href);
+                      const src = href.includes("rgba") ? "./assets/banner/secret.png" : (href);
                       return { src, alt: fileName };
                     });
 
