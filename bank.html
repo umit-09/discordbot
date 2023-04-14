@@ -13,7 +13,6 @@
         background-color: #2e2e2e;
         color: #d6c2b6;
         font-family: 'Poppins', sans-serif;
-        user-select: none;
       }
       
       /* Headings */
@@ -22,7 +21,6 @@
         font-size: 2rem;
         margin-bottom: 1rem;
         text-align: center;
-        user-select: none;
       }
       
       /* User info container */
@@ -33,7 +31,6 @@
         max-width: 30rem;
         padding: 2rem;
         text-align: center;
-        user-select: none;
       }
       
       /* User info paragraphs */
@@ -41,15 +38,6 @@
         color: #2e2e2e;
         font-size: 1.2rem;
         margin: 0.5rem 0;
-        user-select: none;
-      }
-
-      #user-info p {
-        color: #686868;
-        font-size: 1.1rem;
-        margin: 0.5rem 0;
-        text-transform: uppercase;
-        user-select: none;
       }
 
       .container {
@@ -58,15 +46,13 @@
         color: white;
         width: 100%;
         margin-bottom: 20px;
-        user-select: none;
       }
 
       .centered {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          user-select: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       }
     </style>
     
@@ -75,72 +61,6 @@
     <h1>Bank Balance Checker</h1>
     <div id="user-info"></div>
 
-    <script>
-      const urlParams = new URLSearchParams(window.location.search);
-const userId = urlParams.get("id");
-const apiUrl = "./bank.json";
-const bannerFolder = "./assets/banner/";
-
-fetch(apiUrl)
-  .then((response) => response.json())
-  .then((jsonData) => {
-    if (jsonData[userId]) {
-      const userInfo = document.getElementById("user-info");
-
-      const balance = jsonData[userId].balance;
-      const lastUsed = new Date(jsonData[userId].last_used * 1000);
-      const bannerList = jsonData[userId].banner;
-
-      // find the current banner and move it to the front of the list
-      const currentBannerIndex = bannerList.indexOf(jsonData[userId].currentbanner);
-      if (currentBannerIndex > 0) {
-        bannerList.splice(currentBannerIndex, 1);
-        bannerList.unshift(jsonData[userId].currentbanner);
-      }
-
-      // create a div element for each banner
-      const bannerDivs = bannerList
-        .filter((bannerName) => bannerName !== "0")
-        .map((bannerName) => {
-          const bannerSrc = `${bannerFolder}${bannerName}.png`;
-          const bannerDiv = document.createElement("div");
-          bannerDiv.className = "container";
-          bannerDiv.innerHTML = `
-            <img src="${bannerSrc}" alt="${bannerName}" style="width:100%;" draggable="false" data-secret="${userId}">
-            <div class="centered">
-              <h1 style="background-color: black; font-family: sans-serif; font-size: 20px;">${bannerName}</h1>
-            </div>
-          `;
-          return bannerDiv;
-        });
-
-      // add the banner divs to the user info container
-      userInfo.innerHTML = `
-        <p>BALANCE: <strong>${balance}</strong></p><br>
-        <p>LAST USED:</p>
-        <strong><p>${lastUsed.toLocaleString()}</p></strong><br>
-        <p>CURRENT BANNER:</p>
-      `;
-      const currentBannerIndexAfterMove = bannerList.indexOf(jsonData[userId].currentbanner);
-      if (currentBannerIndexAfterMove === 0) {
-        userInfo.appendChild(bannerDivs[0]);
-      } else {
-        const currentBannerDiv = bannerDivs[currentBannerIndexAfterMove];
-        bannerDivs.splice(currentBannerIndexAfterMove, 1);
-        bannerDivs.unshift(currentBannerDiv);
-        userInfo.appendChild(currentBannerDiv);
-      }
-      userInfo.innerHTML += `<p>BANNER(S):</p>`;
-      bannerDivs.forEach((bannerDiv) => userInfo.appendChild(bannerDiv));
-    } else {
-      const userInfo = document.getElementById("user-info");
-      userInfo.innerHTML = `<p>User with ID <strong>${userId}</strong> not found.</p>`;
-    }
-  })
-  .catch((error) => {
-    const userInfo = document.getElementById("user-info");
-    userInfo.innerHTML = `An error occurred: <strong>${error}</strong>`;
-  });
-    </script>
+    <script src="bank-script.js"></script>
   </body>
 </html>
