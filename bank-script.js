@@ -6,7 +6,6 @@ const bannerFolder = "./assets/banner/";
 fetch(apiUrl)
   .then((response) => response.json())
   .then((jsonData) => {
-    console.log(jsonData);
     if (jsonData[userId]) {
       const userInfo = document.getElementById("user-info");
       const balance = jsonData[userId].balance;
@@ -72,3 +71,13 @@ fetch(apiUrl)
       `;
     }
   });
+
+if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+  document.getElementById("pc").style.display = "none";
+  document.getElementById("mobile").style.display = "block";
+}
+else {
+  document.body.style.display = "block";
+  document.getElementById("pc").style.display = "block";
+  document.getElementById("mobile").style.display = "none";
+}
