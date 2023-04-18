@@ -77,7 +77,6 @@ if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
   document.getElementById("mobile").style.display = "block";
 }
 else {
-  document.body.style.display = "block";
   document.getElementById("pc").style.display = "block";
   document.getElementById("mobile").style.display = "none";
 }
