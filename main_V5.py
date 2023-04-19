@@ -1,5 +1,5 @@
 # this code made by umittadelen#4072
-#        main V4.8
+#         main V5
 # ©      copyright 
 #   all rights reserved
 
@@ -213,10 +213,10 @@ async def addrole(
     bank = read_list("bank.json")
 
     if(server_id not in data):
-        data = {server_id:{"roles":{},"mods":[]}}
+        data = {server_id:{"roles":{},"mods":[],"max_roles":5}}
     
     if(ctx.get_guild().owner_id not in data[server_id]["mods"]):
-        data[server_id]["mods"].append(ctx.get_guild().owner_id)
+        data[server_id]["mods"] += ctx.get_guild().owner_id
 
     write_list("data.json",data)
 
@@ -239,8 +239,14 @@ async def addrole(
     if ctx.member.id in data[server_id]["mods"] or user_id == ctx.get_guild().owner_id:
         try:
             if role_id in data[server_id]["roles"]:
-
-                data[server_id]["roles"][role_id] = price
+                if len(data[server_id]["roles"]) < data[server_id]["max_roles"]:
+                    data[server_id]["roles"][role_id] = price
+                else:
+                    await ctx.respond(hikari.Embed(
+                        title=None,
+                        description=f"The server's role limit has been reached. Use the /addroleslot command to add a new role.",
+                        colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['currentbanner']}.png" if str(user_id) in bank and bank[str(user_id)]['currentbanner'] != "0" else None))
+                    return
                 write_list("data.json",data)
 
                 await ctx.respond(hikari.Embed(
@@ -255,8 +261,14 @@ async def addrole(
             if server_id not in data:
                 data[server_id] = {"roles":{},"mods":[ctx.get_guild().owner_id]}
 
-            if str(role_id) not in data[server_id]["roles"]:
-                data[server_id]["roles"] = {role_id:price}
+            if len(data[server_id]["roles"]) < data[server_id]["max_roles"]:
+                data[server_id]["roles"][role_id] = price
+            else:
+                await ctx.respond(hikari.Embed(
+                    title=None,
+                    description=f"The server's role limit has been reached. Use the /addroleslot command to add a new role.",
+                    colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['currentbanner']}.png" if str(user_id) in bank and bank[str(user_id)]['currentbanner'] != "0" else None))
+                return
                 
             write_list("data.json",data)
             print("server saved to data.json")
@@ -395,13 +407,6 @@ async def removerole(
 
     user_id = ctx.member.id
     server_id = str(ctx.guild_id)
-
-    if user_id != ctx.get_guild().owner_id:
-        await ctx.respond(hikari.Embed(
-            title=None,
-            description=f"<@{user_id}> you need to be a moderator for use this command",
-            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['currentbanner']}.png" if str(user_id) in bank and bank[str(user_id)]['currentbanner'] != "0" else None))
-        return
     
     if(user_id != ctx.get_guild().owner_id or user_id not in data[server_id]["mods"]):
         print(user_id,type(user_id))
@@ -457,7 +462,7 @@ async def serverinfo(ctx: lightbulb.SlashContext):
 @bot.command()
 @lightbulb.command("bankinfo", "Get your information")
 @lightbulb.implements(lightbulb.SlashCommand)
-async def serverinfo(ctx: lightbulb.SlashContext):
+async def bankinfo(ctx: lightbulb.SlashContext):
     user_id = ctx.author.id
     await ctx.respond(hikari.Embed(
         title="Link",
@@ -596,6 +601,51 @@ async def banners(ctx):
         description=f"you can use this link to view all of the banners",
         colour=random.randint(0, 0xFFFFFF),
         url="https://umit-09.github.io/discordbot/"))
+
+@bot.command()
+@lightbulb.command("addroleslot", "Add 2 role slot with 30")
+@lightbulb.implements(lightbulb.SlashCommand)
+async def addroleslot(ctx: lightbulb.SlashContext):
+    user_id = ctx.member.id
+    server_id = str(ctx.guild_id)
+    data = read_list("data.json")
+    bank = read_list("bank.json")
+
+    if(server_id not in data):
+        data = {server_id:{"roles":{},"mods":[],"max_roles":5}}
+    
+    if(user_id != ctx.get_guild().owner_id or user_id not in data[server_id]["mods"]):
+        print(user_id,type(user_id))
+        print(ctx.get_guild().owner_id,type(ctx.get_guild().owner_id))
+        print(data[server_id]["mods"])
+        await ctx.respond(hikari.Embed(
+            title=None,
+            description=f"<@{user_id}> you need to be a moderator for use this command",
+            colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['currentbanner']}.png" if str(user_id) in bank and bank[str(user_id)]['currentbanner'] != "0" else None))
+        return
+    
+    if str(user_id) in bank:
+        count = 30
+        if bank[str(user_id)]['balance'] >= count:
+            balance = int(bank[str(user_id)]['balance'])
+            bank[str(user_id)]['balance'] = balance - count
+            balance -= count
+
+            data[server_id]["max_roles"] = data[server_id]["max_roles"] + 2
+            write_list("bank.json",bank)
+            write_list("data.json",data)
+        
+            await ctx.respond(hikari.Embed(
+                title=None,
+                description=f"<@{user_id}> 2 role slot added,\nnow you have {balance}{papir}\nnow this server has {data[server_id]['max_roles']} slots",
+                colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['currentbanner']}.png" if str(user_id) in bank and bank[str(user_id)]['currentbanner'] != "0" else None))
+            return
+        else:
+            await ctx.respond(hikari.Embed(
+                title=None,
+                description=f"<@{user_id}> you dont have {count}{papir}",
+                colour=random.randint(0, 0xFFFFFF)).set_image(f"./assets/banner/{bank[str(user_id)]['currentbanner']}.png" if str(user_id) in bank and bank[str(user_id)]['currentbanner'] != "0" else None))
+            return
 
 # Run the bot
 bot.run()
