@@ -71,7 +71,6 @@ fetch(apiUrl)
       `;
     }
   });
-
 if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
   document.getElementById("pc").style.display = "none";
   document.getElementById("mobile").style.display = "block";
