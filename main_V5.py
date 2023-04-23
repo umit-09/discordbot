@@ -12,7 +12,7 @@ testers = ["852235304965242891","1086242607933440030","755088653835042906"]
 cooldown_time = 12 * 60 * 60
 
 with open('secret.secret', 'r') as f:
-    bot = lightbulb.BotApp(token=f.readline())
+    bot = lightbulb.BotApp(token=f.readline().strip("\n"))
 
 
 def write_list(file, input):
