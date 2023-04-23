@@ -1,0 +1,21 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <p id="text">hello</p>
+    <script>
+        fetch('http://84.211.187.101/home/umittadelen/discordbot/bank.json')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("text").innerHTML = data
+            // Do something with the JSON data
+        })
+        .catch(error => {
+            console.error('Error fetching JSON:', error);
+            document.getElementById("text").innerHTML = ('Error fetching JSON:', error)
+        });
+    </script>
+</body>
+</html>
