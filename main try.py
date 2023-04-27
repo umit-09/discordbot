@@ -40,7 +40,7 @@ async def on_startup() -> None:
 async def on_shutdown() -> None:
     await bot.close()
 
-@app.get("/")
+@app.get("/bank")
 async def index() -> JSONResponse:
     return JSONResponse(read_list("./bank.json"))
 
@@ -50,4 +50,4 @@ app.mount("/static", StaticFiles(directory="."), name="static")
 # Run the app with uvicorn
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="84.211.187.101", port=8000)
+    uvicorn.run(app, host="localhost", port=8000)
