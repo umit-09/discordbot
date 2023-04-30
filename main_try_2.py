@@ -701,5 +701,5 @@ if __name__ == "__main__":
     server_thread.join()
 
 
-
+#https://github.com/Jonxslays/fastapi-bot/blob/master/fastapi-bot/__main__.py
 #ssh umittadelen@84.211.187.101
