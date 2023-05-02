@@ -80,4 +80,3 @@ from commands import addmod,addrole,addroleslot,balance,bankinfo,banners,buybann
 ###################### hikari (end) ###########################
 
 uvicorn.run(app, host="0.0.0.0", port=8000)
-#ssh umittadelen@84.211.187.101
