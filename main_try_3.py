@@ -8,7 +8,6 @@ from typing import Optional
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-import uvicorn
 
 ###################### define (start) ###########################
 
