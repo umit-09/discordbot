@@ -1,6 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
 const userId = urlParams.get("id");
-const apiUrl = "http://127.0.0.1:8000";
+const apiUrl = "http://84.211.187.101:8000";
 const bannerFolder = "./assets/banner/";
 
 fetch(apiUrl)
