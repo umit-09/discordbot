@@ -44,7 +44,7 @@ def fastapi_server():
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["https://umit-09.github.io/"],
+        allow_origins=["https://umit-09.github.io/","http://84.211.187.101:8000"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -54,7 +54,7 @@ def fastapi_server():
     async def index():
         return read_list("./bank.json")
     
-    uvicorn.run(app,host="0.0.0.0",ssl_keyfile="key.pem",ssl_certfile="cert.pem",)
+    uvicorn.run(app,host="0.0.0.0",ssl_keyfile="key.pem",ssl_certfile="cert.pem")
 
 def hikari_server():
     with open('secret.secret', 'r') as f:
