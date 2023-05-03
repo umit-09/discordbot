@@ -42,13 +42,13 @@ except:
 def fastapi_server():
     app = FastAPI()
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["https://umit-09.github.io/","http://84.211.187.101:8000"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+#    app.add_middleware(
+#        CORSMiddleware,
+#        allow_origins=["https://umit-09.github.io/","http://84.211.187.101:8000"],
+#        allow_credentials=True,
+#        allow_methods=["*"],
+#        allow_headers=["*"],
+#    )
 
     @app.get("/")
     async def index():
