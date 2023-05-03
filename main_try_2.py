@@ -46,6 +46,10 @@ def fastapi_server():
     async def index():
         return FileResponse("index.html")
     
+    @app.get("/banner.json")
+    async def index():
+        return FileResponse("banner.json")
+    
     uvicorn.run(app,host="0.0.0.0")
 
 def hikari_server():
