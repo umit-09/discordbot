@@ -646,7 +646,7 @@ def print_cpu_temp_ram_usage():
         total = mem.total / (1024 * 1024)  # Convert to MB
         
         print(f"RAM usage: {used:.2f} MB\navailable: {available:.2f} MB \ntotal: {total:.2f} MB")
-        time.sleep(60*60)
+        time.sleep(60)
 
 thread1 = threading.Thread(target=fastapi_server)
 thread2 = threading.Thread(target=hikari_server)
