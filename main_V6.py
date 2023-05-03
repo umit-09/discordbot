@@ -638,27 +638,14 @@ def hikari_server():
 
     bot.run()
 
-async def print_cpu_temp_ram_usage():
-    while True:
-        mem = psutil.virtual_memory()
-        used = mem.used / (1024 * 1024)  # Convert to MB
-        available = mem.available / (1024 * 1024)  # Convert to MB
-        total = mem.total / (1024 * 1024)  # Convert to MB
-        
-        print(f"RAM usage: {used:.2f} MB\navailable: {available:.2f} MB \ntotal: {total:.2f} MB")
-        await asyncio.sleep(60)
-
 thread1 = threading.Thread(target=fastapi_server)
 thread2 = threading.Thread(target=hikari_server)
-thread3 = threading.Thread(target=print_cpu_temp_ram_usage)
 
 thread1.start()
 thread2.start()
-thread3.start()
 
 thread1.join()
 thread2.join()
-thread3.join()
 
 try:
     while True:
