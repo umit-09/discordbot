@@ -44,7 +44,7 @@ def fastapi_server():
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["https://umit-09.github.io/discordbot/bank"],
+        allow_origins=["https://umit-09.github.io/"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
