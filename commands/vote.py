@@ -1,4 +1,6 @@
-from main_V5 import bot@bot.command()
+with open('secret.secret', 'r') as f:
+    bot = lightbulb.BotApp(token=f.readline().strip("\n"))
+    
 print("vote")
 
 @lightbulb.command("vote", "Get daily money by voting for the bot")

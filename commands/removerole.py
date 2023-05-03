@@ -1,4 +1,6 @@
-from main_V5 import bot
+with open('secret.secret', 'r') as f:
+    bot = lightbulb.BotApp(token=f.readline().strip("\n"))
+    
 print("removerole")
 
 @bot.command

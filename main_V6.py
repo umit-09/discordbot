@@ -56,16 +56,31 @@ def hikari_server():
     from commands import addmod,addrole,addroleslot,bankinfo,banners,buybanner,buyrole,invite,on_guild_leave,on_started,ping,removemod,removerole,serverinfo,usebanner,vote
     bot.run()
 
+def print_cpu_temp_ram_usage():
+    while True:
+        # Get CPU temperature
+        cpu_temp = psutil.sensors_temperatures().get('cpu_thermal')[0].current
 
+        # Get RAM usage
+        ram_usage = psutil.virtual_memory().percent
+
+        # Print CPU temperature and RAM usage to the console
+        print(f"CPU temperature: {cpu_temp}°C, RAM usage: {ram_usage}%")
+
+        # Wait for one hour
+        time.sleep(3600)
 
 thread1 = threading.Thread(target=fastapi_server)
 thread2 = threading.Thread(target=hikari_server)
+thread3 = threading.Thread(target=print_cpu_temp_ram_usage)
 
 thread1.start()
 thread2.start()
+thread3.start()
 
 thread1.join()
 thread2.join()
+thread3.join()
 
 try:
     while True:
