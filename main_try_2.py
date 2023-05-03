@@ -1,9 +1,9 @@
-import hikari, psutil, lightbulb, random, time, os, json, asyncio, datetime, uvicorn
+import hikari, psutil, lightbulb, random, time, os, json, asyncio, datetime, uvicorn, threading
 from typing import Optional
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-import concurrent.futures
+from fastapi.middleware.cors import CORSMiddleware
 
 ###################### define (start) ###########################
 
@@ -39,35 +39,44 @@ try:
 except:
     write_list('data.json',{})
 
-###################### define (end) ###########################
-
-###################### start (start) ###########################
-def task_one():
+def fastapi_server():
     app = FastAPI()
-    # Mount the static directory to the app
-    app.mount("/static", StaticFiles(directory="."), name="static")
 
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["https://umit-09.github.io","http://127.0.0.1:5500"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    @app.get("/")
+    async def index():
+        return read_list("./bank.json")
+    
+    uvicorn.run(app,host="0.0.0.0")
+
+def hikari_server():
     with open('secret.secret', 'r') as f:
         bot = lightbulb.BotApp(token=f.readline().strip("\n"))
 
-    @app.get("/bank")
-    async def index() -> JSONResponse:
-        return JSONResponse(read_list("./bank.json"))
-
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(uvicorn.run(app, loop=loop, port=8000))
-
-def task_two():
-    with open('secret.secret', 'r') as f:
-        bot = lightbulb.BotApp(token=f.readline().strip("\n"))
-    from commands import addmod,addrole,addroleslot,balance,bankinfo,banners,buybanner,buyrole,invite,on_guild_leave,on_started,ping,removemod,removerole,serverinfo,usebanner,vote
+    from commands import addmod,addrole,addroleslot,bankinfo,banners,buybanner,buyrole,invite,on_guild_leave,on_started,ping,removemod,removerole,serverinfo,usebanner,vote
     bot.run()
 
-async def main():
-    async with asyncio.get_running_loop() as loop:
-        task1 = loop.create_task(task_one())
-        task2 = loop.create_task(task_two())
-        await asyncio.gather(task1, task2)
 
-asyncio.run(main())
+
+thread1 = threading.Thread(target=fastapi_server)
+thread2 = threading.Thread(target=hikari_server)
+
+thread1.start()
+thread2.start()
+
+thread1.join()
+thread2.join()
+
+try:
+    while True:
+        pass
+except KeyboardInterrupt:
+    thread1.stop()
+    thread2.stop()
