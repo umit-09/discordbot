@@ -41,15 +41,13 @@ except:
 
 def fastapi_server():
     app = FastAPI()
+    
+    app.mount("/", StaticFiles(directory="."), name="files")
 
     @app.get("/")
     async def index():
         return FileResponse("index.html")
-    
-    @app.get("/banner.json")
-    async def index():
-        return FileResponse("banner.json")
-    
+
     uvicorn.run(app,host="0.0.0.0")
 
 def hikari_server():
