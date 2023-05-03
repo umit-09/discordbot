@@ -54,7 +54,7 @@ def fastapi_server():
     async def index():
         return read_list("./bank.json")
     
-    uvicorn.run(app,host="0.0.0.0")
+    uvicorn.run(app,host="0.0.0.0",ssl_keyfile="key.pem",ssl_certfile="cert.pem",)
 
 def hikari_server():
     with open('secret.secret', 'r') as f:
