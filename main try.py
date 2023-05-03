@@ -1,25 +1,27 @@
 # this code made by umittadelen#4072
-#         main V5
+#         main V6
 # ©      copyright 
 #   all rights reserved
 
-import hikari,psutil,lightbulb,random,time,os,json,asyncio,datetime
+import hikari, psutil, lightbulb, random, time, os, json, asyncio, datetime, uvicorn, threading
 from typing import Optional
-
-import uvicorn
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 coin = ["<:1:1084777301612437504>","<:2:1084777303223062609>","<:3:1084777306691731527>","<:4:1084777309103468584>","<:5:1084777310932193300>"]
 papir = "<:papir:1084796977767776256>"
 testers = ["852235304965242891","1086242607933440030","755088653835042906"]
 cooldown_time = 12 * 60 * 60
 
-with open('secret.secret', 'r') as f:
-    bot = lightbulb.BotApp(token=f.readline().strip("\n"))
-app = FastAPI()
+def write_list(file, input):
+    with open(file, 'w') as fp:
+        json.dump(input, fp)
+    print(f"\n\n{file}:\n")
+    print(json.dumps(input, indent=4))
 
+# Read list from JSON file
 def read_list(file):
     try:
         with open(file, 'r') as fp:
@@ -30,24 +32,44 @@ def read_list(file):
     print(json.dumps(output, indent=4))
     return output
 
-# Starts the bot when the server starts
-@app.on_event("startup")
-async def on_startup() -> None:
-    await bot.start()
+try:
+    bank = read_list('bank.json')
+except:
+    write_list('bank.json',{})
 
-# Closes the bot when the server closes
-@app.on_event("shutdown")
-async def on_shutdown() -> None:
-    await bot.close()
+try:
+    data = read_list('data.json')
+except:
+    write_list('data.json',{})
 
-@app.get("/bank")
-async def index() -> JSONResponse:
-    return JSONResponse(read_list("./bank.json"))
+def fastapi_server():
+    app = FastAPI()
+    
+    app.mount("/", StaticFiles(directory="."), name="files")
 
-# Mount the static directory to the app
-app.mount("/static", StaticFiles(directory="."), name="static")
+    uvicorn.run(app,host="0.0.0.0")
 
-# Run the app with uvicorn
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="localhost", port=8000)
+def hikari_server():
+    with open('secret.secret', 'r') as f:
+        bot = lightbulb.BotApp(token=f.readline().strip("\n"))
+
+    from commands import addmod,addrole,addroleslot,bankinfo,banners,buybanner,buyrole,invite,on_guild_leave,on_started,ping,removemod,removerole,serverinfo,usebanner,vote
+    bot.run()
+
+
+
+thread1 = threading.Thread(target=fastapi_server)
+thread2 = threading.Thread(target=hikari_server)
+
+thread1.start()
+thread2.start()
+
+thread1.join()
+thread2.join()
+
+try:
+    while True:
+        pass
+except KeyboardInterrupt:
+    thread1.stop()
+    thread2.stop()

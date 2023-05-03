@@ -1,11 +1,14 @@
+# this code made by umittadelen#4072
+#         main V6
+# ©      copyright 
+#   all rights reserved
+
 import hikari, psutil, lightbulb, random, time, os, json, asyncio, datetime, uvicorn, threading
 from typing import Optional
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-
-###################### define (start) ###########################
 
 coin = ["<:1:1084777301612437504>","<:2:1084777303223062609>","<:3:1084777306691731527>","<:4:1084777309103468584>","<:5:1084777310932193300>"]
 papir = "<:papir:1084796977767776256>"
