@@ -44,10 +44,6 @@ def fastapi_server():
     
     app.mount("/", StaticFiles(directory="."), name="files")
 
-    @app.get("/")
-    async def index():
-        return FileResponse("index.html")
-
     uvicorn.run(app,host="0.0.0.0")
 
 def hikari_server():

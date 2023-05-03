@@ -1,12 +1,11 @@
 const urlParams = new URLSearchParams(window.location.search);
 const userId = urlParams.get("id");
-const apiUrl = "https://84.211.187.101:8000";
+const apiUrl = "./bank.json";
 const bannerFolder = "./assets/banner/";
 
 fetch(apiUrl)
   .then((response) => response.json())
   .then((jsonData) => {
-    console.log(response)
     if (jsonData[userId]) {
       const userInfo = document.getElementById("user-info");
       const balance = jsonData[userId].balance;
