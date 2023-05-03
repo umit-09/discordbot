@@ -640,17 +640,13 @@ def hikari_server():
 
 def print_cpu_temp_ram_usage():
     while True:
-        # Get CPU temperature
-        cpu_temp = psutil.sensors_temperatures().get('cpu_thermal')[0].current
-
-        # Get RAM usage
-        ram_usage = psutil.virtual_memory().percent
-
-        # Print CPU temperature and RAM usage to the console
-        print(f"CPU temperature: {cpu_temp}°C, RAM usage: {ram_usage}%")
-
-        # Wait for one hour
-        time.sleep(3600)
+        mem = psutil.virtual_memory()
+        used = mem.used / (1024 * 1024)  # Convert to MB
+        available = mem.available / (1024 * 1024)  # Convert to MB
+        total = mem.total / (1024 * 1024)  # Convert to MB
+        
+        print(f"RAM usage: {used:.2f} MB\navailable: {available:.2f} MB \ntotal: {total:.2f} MB")
+        time.sleep(60*60)
 
 thread1 = threading.Thread(target=fastapi_server)
 thread2 = threading.Thread(target=hikari_server)
