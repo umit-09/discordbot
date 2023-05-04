@@ -39,7 +39,7 @@ fetch(apiUrl)
       userInfo.innerHTML = `
         <p>BALANCE: <strong>${balance}</strong></p><br>
         <p>LAST USED:</p>
-        <strong><p>${lastUsed.toLocaleString()}</p></strong><br>
+        <p><strong>${lastUsed.toLocaleString()}</p></strong><br>
       `;
 
       if (jsonData[userId].currentbanner !== "0") {
