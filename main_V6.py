@@ -50,7 +50,7 @@ def fastapi_server():
     
     app.mount("/", StaticFiles(directory="."), name="files")
 
-    uvicorn.run(app, host="192.168.0.45", port=443)
+    uvicorn.run(app, port=443)
 
 def hikari_server():
     with open('secret.secret', 'r') as f:
