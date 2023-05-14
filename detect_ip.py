@@ -26,9 +26,9 @@ def print_ips():
     while str(current_ip) != end_ip:
         ip_str = str(current_ip)
         if is_ip_used(ip_str, answer):
-            print(f"{red}Used: {ip_str}:{answer}{reset}")
+            print(f"{red}Used:\t{ip_str}:{answer}{reset}")
         else:
-            print(f"{green}Unused: {ip_str}:{answer}{reset}")
+            print(f"{green}Unused:\t{ip_str}:{answer}{reset}")
         current_ip = current_ip + 1
 
 print_ips()
