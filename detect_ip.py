@@ -1,11 +1,11 @@
 import socket
 import ipaddress
 
-def is_ip_used(ip):
+def is_ip_used(ip,port):
     # Check if the IP address is in use
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(0.1)
-    result = sock.connect_ex((ip, 22))  # Test SSH port 22
+    result = sock.connect_ex((ip, port)) # Test SSH port 22
     sock.close()
     return result == 0
 
@@ -23,10 +23,10 @@ def print_ips():
     current_ip = ipaddress.IPv4Address(start_ip)
     while str(current_ip) != end_ip:
         ip_str = str(current_ip)
-        if is_ip_used(ip_str):
+        if is_ip_used(ip_str, 8000):
             print(f"{red}Used: {ip_str}{reset}")
         else:
-            print(f"{green}Unused: {ip_str}{reset}")
+            print(f"{green}Unused: {ip_str}:8000{reset}")
         current_ip = current_ip + 1
 
 print_ips()
